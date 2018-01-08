@@ -1,0 +1,19 @@
+import { NgModule } from '@angular/core';
+import { IonicModule } from 'ionic-angular';
+import { NavbarComponent } from './navbar/navbar';
+import { SearchToolbarComponent } from './search-toolbar/search-toolbar';
+
+@NgModule({
+	declarations: [
+		NavbarComponent,
+    	SearchToolbarComponent
+	],
+	imports: [
+		IonicModule
+	],
+	exports: [
+		NavbarComponent,
+    	SearchToolbarComponent 
+	]
+})
+export class ComponentsModule {}

@@ -1,14 +1,50 @@
-<ion-header>
-  <ion-navbar>
-    <ion-title>
-      Ionic Blank
-    </ion-title>
-  </ion-navbar>
+<ion-header no-border>
+
+  <nav-bar></nav-bar>  
+
 </ion-header>
 
+
 <ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+
+  <button 
+    ion-item
+    *ngIf="curUser !== null" 
+    full 
+    block 
+    (click)="onShowCartPage()">
+    <ion-icon name="cart" item-left></ion-icon>View cart
+  </button>
+  <button 
+    ion-item 
+    *ngIf="curUser !== null"
+    full 
+    block 
+    (click)="onShowOrdersPage()">
+    <ion-icon name="pricetags" item-left></ion-icon>View my orders
+  </button>
+
+  <button 
+    ion-button 
+    large 
+    block 
+    full 
+    *ngIf="curUser !== null && newSettings == null"
+    (click)="onShowQuizPage()">
+    Begin Personalized Quiz
+  </button>
+
+  <ion-item 
+    *ngIf="curUser === null" 
+    no-lines 
+    text-center>
+    You are not logged in
+  </ion-item>
+
+  <ion-list *ngIf="curUser !== null && newSettings !== null">
+    <ion-item *ngFor="let opt of newSettings">
+      {{ opt }}
+    </ion-item>
+  </ion-list>
+
 </ion-content>

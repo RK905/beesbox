@@ -1,0 +1,36 @@
+<ion-menu [content]="content">
+  <ion-content>
+      <ion-list>
+
+          <button
+              menuClose
+              ion-item 
+              icon-left 
+              detail-none 
+              (click)="setRoot('LoginPage')">
+              <ion-icon name="key"></ion-icon>
+              Login
+          </button>
+
+          <!--<ng-container *ngIf="isAuthenticated">-->
+              <button ion-item>
+                  Category
+              </button>
+
+              <button
+                  menuClose
+                  ion-item 
+                  icon-left 
+                  detail-none 
+                  (click)="doLogout()">
+                  <ion-icon name="key"></ion-icon>
+                  Logout
+              </button>
+          <!--</ng-container>-->
+          
+          
+      </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-nav #content [root]="menuRoot" swipeBackEnabled="false"></ion-nav>

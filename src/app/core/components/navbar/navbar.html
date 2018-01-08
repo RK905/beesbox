@@ -1,0 +1,30 @@
+<ion-navbar padding-vertical color="bees">
+
+    <ion-buttons left>
+      <button
+        ion-button 
+        icon-only
+        menuToggle 
+        large>
+        <ion-icon [ngStyle]="{ 'font-size': headerSize }" name="happy"></ion-icon>
+      </button>
+    </ion-buttons>
+  
+  
+    <ion-label padding-left (click)="(authService.curUser  && authService.curUser.isAdmin) ? onShowAdminOptions() : onAnonClick()">
+      {{ (authService.curUser === null || (authService.curUser !== null && currentPage !== 'HomePage')) ? 'Beesbox' : authService.curUser.displayName }}
+    </ion-label>
+  
+    <ion-buttons right>
+      <button 
+        padding-right
+        ion-button 
+        icon-only 
+        clear
+        (click)="onShowCart()">
+        <ion-icon name="cart"></ion-icon>
+        <ion-badge item-end>0</ion-badge>
+      </button>
+    </ion-buttons>
+  
+  </ion-navbar>

@@ -1,0 +1,32 @@
+<ion-toolbar no-padding no-margin no-border>
+
+  <ion-searchbar  
+    no-margin
+    placeholder="Search"
+    [showCancelButton]="false"
+    [(ngModel)]="myQuery" 
+    (ionInput)="onModifySearch()"
+    (ionCancel)="onCancelSearch()">
+  </ion-searchbar> 
+
+</ion-toolbar>
+
+<ion-toolbar no-padding no-margin no-border>
+
+  <ion-segment 
+    [(ngModel)]="selectedView" 
+    no-margin 
+    no-border
+    (ionChange)="onToggleView($event)">
+
+      <ion-segment-button value="list">
+        <ion-icon name="list"></ion-icon>
+      </ion-segment-button>  
+
+      <ion-segment-button value="grid">
+        <ion-icon name="grid"></ion-icon>
+      </ion-segment-button>
+
+    </ion-segment>
+
+</ion-toolbar>

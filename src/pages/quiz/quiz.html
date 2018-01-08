@@ -1,0 +1,86 @@
+<ion-header>
+
+  <nav-bar>
+
+  </nav-bar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-slides #quiz pager>
+
+    <ion-slide>
+      <ion-list radio-group [(ngModel)]="myGender">
+        <ion-list-header>
+          What is your GENDER?
+        </ion-list-header>
+
+        <ion-item *ngFor="let opt of genderOpts; let i = index">
+          <ion-label>{{ opt === 'transgender' ? 'Neither' : opt }}</ion-label>
+          <ion-radio value="opt"></ion-radio>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+
+    <ion-slide>
+      <ion-list>
+        <ion-list-header>
+          What is your BIRTHDATE?
+        </ion-list-header>
+        <ion-item>
+          <ion-datetime
+            [(ngModel)]="selectedDate" 
+            placeholder="Enter birthdate"
+            pickerFormat="MMM, DD, YYYY" 
+            displayFormat="MMM, DD, YYYY" 
+            min="1900">
+          </ion-datetime>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+
+    <ion-slide>
+      <ion-list>
+        <ion-list-header>
+          Are you MARRIED/IN A RELATIONSHIP?
+        </ion-list-header>
+        <ion-item>
+          <ion-label>{{ myStatus ? 'Partnered' : 'Single' }}</ion-label>
+          <ion-toggle item-right [(ngModel)]="myStatus"></ion-toggle>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+
+    <ion-slide>
+      <button 
+        ion-button 
+        full 
+        block
+        (click)="dismiss()">
+        Finalize
+      </button>
+    </ion-slide>
+  </ion-slides>
+</ion-content>
+
+<ion-fab bottom left>
+  <button 
+    #prevSlide
+    ion-fab 
+    mini 
+    [disabled]="isFirstSlide"
+    (click)="onPrevSlide()">
+    <ion-icon name="arrow-back"></ion-icon>
+  </button>
+</ion-fab>
+<ion-fab bottom right>
+  <button 
+    #nextSlide
+    ion-fab 
+    mini 
+    [disabled]="isLastSlide"
+    (click)="onNextSlide()">
+    <ion-icon name="arrow-forward"></ion-icon>
+  </button>
+</ion-fab>

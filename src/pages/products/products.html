@@ -1,0 +1,69 @@
+<ion-header no-border>
+
+  <nav-bar></nav-bar>
+
+  <!--SEARCHBAR-->
+  <ion-toolbar no-padding no-margin no-border>
+
+    <ion-searchbar  
+      no-margin
+      placeholder="Search"
+      [showCancelButton]="false"
+      [(ngModel)]="myQuery" 
+      (ionInput)="onModifySearch()"
+      (ionCancel)="onCancelSearch()">
+    </ion-searchbar> 
+  
+  </ion-toolbar>
+      
+  <ion-toolbar no-padding no-margin no-border>
+  
+    <ion-segment 
+      [(ngModel)]="selectedView" 
+      no-margin 
+      no-border
+      (ionChange)="onToggleView($event)">
+  
+        <ion-segment-button value="list">
+          <ion-icon name="list"></ion-icon>
+        </ion-segment-button>  
+  
+        <ion-segment-button value="grid">
+          <ion-icon name="grid"></ion-icon>
+        </ion-segment-button>
+  
+      </ion-segment>
+  
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content #content>
+  <ion-list *ngIf="view === 'list'">
+      <button ion-item *ngFor="let prod of sampleProducts" details-none>
+        <ion-icon item-left [name]="prod.img"></ion-icon>
+        <h2>{{ prod.title }}</h2>
+        <p>{{ prod.desc }}</p>
+        <ion-note>
+          {{ prod.price }}
+        </ion-note>
+      </button>
+    </ion-list>
+  
+    <ion-grid *ngIf="view === 'grid'" padding-horizontal>
+      <ion-row>
+        <ion-col col-6 *ngFor="let prod of sampleProducts">
+          <ion-card>
+            <ion-card-header text-center>
+              {{ prod.title }}
+            </ion-card-header>
+
+            <ion-card-content text-center>
+                <ion-icon [name]="prod.img"></ion-icon>
+            </ion-card-content>
+          </ion-card>
+          
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+</ion-content>

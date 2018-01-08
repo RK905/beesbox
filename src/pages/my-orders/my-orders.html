@@ -1,0 +1,22 @@
+<ion-header no-border>
+
+  <nav-bar></nav-bar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-item no-lines text-center *ngIf="curUser === null">
+      <ion-label>You are not logged in</ion-label>
+  </ion-item>
+  <ion-item no-lines text-center *ngIf="curUser !== null && orderList.length < 1">
+    No orders made yet...
+  </ion-item>
+
+  <ion-list *ngIf="curUser !== null && orderList.length > 0">
+    <ion-item *ngFor="let item of orderList">
+      {{ item }}
+    </ion-item>
+  </ion-list>
+  
+</ion-content>
