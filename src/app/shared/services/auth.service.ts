@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { AppUser } from '../models/app-user.model';
+import { AngularFireObject } from 'angularfire2/database';
 import { UserService } from './user.service';
 
 import { Observable } from 'rxjs/Observable';
@@ -33,12 +34,12 @@ export class AuthService {
         this.afAuth.auth.signOut();
     }
 
-    get appUser$(): Observable<AppUser> {
-        return this.user$   
-            .switchMap((user) => {
+    /*get appUser$(): Observable<AppUser> {
+        return this.user$  
+            .switchMap((user: firebase.User) => {
                 if (user) return this.userService.getUser(user.uid);
 
                 return Observable.of(null);
             });
-    }
+    }*/
 }

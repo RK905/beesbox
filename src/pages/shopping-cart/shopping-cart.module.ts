@@ -11,5 +11,8 @@ import { ShoppingCartPage } from './shopping-cart';
     CoreModule,
     IonicPageModule.forChild(ShoppingCartPage),
   ],
+  exports: [
+    ShoppingCartPage
+  ]
 })
 export class ShoppingCartPageModule {}

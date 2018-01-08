@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { SearchService } from '../../services/search.service';
+//import { SearchService } from '../../services/search.service';
 
 
 @Component({
@@ -11,12 +11,13 @@ export class SearchToolbarComponent {
 
   selectedView: string = 'list';
   myQuery: string;
-  constructor(public searchService$: SearchService) {
+  constructor(//public searchService$: SearchService
+  ) {
 
   }
 
   onToggleView(event: Event) {
-    this.searchService$.view.emit(this.selectedView);
+    //this.searchService$.view.emit(this.selectedView);
   }
 
 }

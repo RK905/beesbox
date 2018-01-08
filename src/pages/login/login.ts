@@ -36,9 +36,13 @@ export class LoginPage {
     console.log('ionViewDidLoad LoginPage');
   }
 
-  doLogin(form: NgForm) {
-    let email: string = form.value.email;
-    let password: string = form.value.password;
+  doLogin(method: string, form?: NgForm) {
+    let email: string;
+    let password: string;
+    if (form) {
+      email = form.value.email;
+      password = form.value.password;
+    }
 
     let loader = this.loadingCtrl.create({
       content: 'Logging in'
@@ -56,16 +60,18 @@ export class LoginPage {
         this.handleToast(errMsg);
       }
     });
-    this.authService.loginEmail(email, password)
-      .then((data) => {
-        //console.log(data);
-        loader.dismiss();
-        this.navCtrl.setRoot('TabsPage');
-      })
-      .catch((error) => {
-        console.log(error.message);
-        loader.dismiss();
-      });
+    if (method === 'email' && form) {
+      this.authService.loginEmail(email, password)
+        .then((data) => {
+          //console.log(data);
+          loader.dismiss();
+          this.navCtrl.setRoot('TabsPage');
+        })
+        .catch((error) => {
+          console.log(error.message);
+          loader.dismiss();
+        });
+      }
     /*this.authService.signinEmail(form.value.email, form.value.password)
       .then((data) => {
         //console.log(data);

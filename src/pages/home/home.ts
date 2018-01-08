@@ -61,7 +61,7 @@ export class HomePage {
     });
     
     quizModal.present();
-    this.curUser$.userSettings = this.newSettings;
+    //this.curUser$.userSettings = this.newSettings;
   }
 
 

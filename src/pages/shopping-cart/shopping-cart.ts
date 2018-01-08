@@ -23,9 +23,9 @@ export class ShoppingCartPage implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.user$.subscribe((user) => {
+    //this.authService.user$.subscribe((user) => {
 
-    })
+    //})
   }
 
   ionViewDidLoad() {
