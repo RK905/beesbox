@@ -11,8 +11,8 @@
     </ion-buttons>
   
   
-    <ion-label padding-left (click)="(authService.curUser  && authService.curUser.isAdmin) ? onShowAdminOptions() : onAnonClick()">
-      {{ (authService.curUser === null || (authService.curUser !== null && currentPage !== 'HomePage')) ? 'Beesbox' : authService.curUser.displayName }}
+    <ion-label padding-left (click)="(appUser$  && appUser$.isAdmin === true) ? onShowAdminOptions() : ''">
+      {{ (appUser$ === null || (appUser$ !== null && currentPage !== 'HomePage')) ? 'My Beesbox' : appUser$.name }}
     </ion-label>
   
     <ion-buttons right>

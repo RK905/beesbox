@@ -1,15 +1,19 @@
-import { Component }       from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, 
+         Nav,
          NavController, 
          NavParams,
+         AlertController,
          LoadingController,
-         ToastController } from 'ionic-angular';
+         ToastController }      from 'ionic-angular';
 
-import { AuthService }     from '../../app/shared/services/auth.service';
-import { HelperService }   from '../../app/shared/services/helper.service';
-import { UserService }     from '../../app/shared/services/user.service';
+import { AuthService }          from '../../app/shared/services/auth.service';
+import { HelperService }        from '../../app/shared/services/helper.service';
+import { UserService }          from '../../app/shared/services/user.service';
+import { WooCommerceService }   from '../../app/shared/services/woocommerce.service';
 
-import { Observable }      from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
+import * as firebase  from 'firebase';
 
 
 @IonicPage()
@@ -19,26 +23,46 @@ import { Observable }      from 'rxjs/Observable';
 })
 export class MenuPage {
 
+  @ViewChild(Nav) nav: Nav;
   menuRoot: string = 'TabsPage';
-  isAuthenticated: Observable<boolean>;
+  appUser$: any;
+  wooCom: any;
+  catList$: any;
+
+  categories$: any[];
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
+              public alertCtrl: AlertController,
               public loadingCtrl: LoadingController,
               public toastCtrl: ToastController,
               public authService: AuthService,
               public helperService: HelperService,
-              public userService: UserService) {
+              public userService: UserService,
+              private wooService: WooCommerceService) {
+
+    this.authService.user$.subscribe( user => {
+      if (!user) return;
+      this.appUser$ = this.userService.getUser(user.uid);
+    });
+    this.wooCom = this.wooService.init();
     
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MenuPage');
+    this.wooCom.getAsync('products/categories').then((categories) => {
+      this.catList$ = JSON.parse(categories.toJSON().body);
+      console.log(...this.catList$);
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   setRoot(page: string) {
     
     this.menuRoot = page;
+    this.navCtrl.getActiveChildNavs()[0].setRoot(page);
   }
 
   doLogout() {
@@ -49,14 +73,48 @@ export class MenuPage {
     load.present();
 
     load.onDidDismiss(() => {
-      let msg: string = this.isAuthenticated ? 'Success: Logged out' : 'Error: Logut failed';
+      let msg: string = this.appUser$ != undefined ? 'Error: Logout failed' : 'Success: Logged out';
       this.handleToast(msg);
     });
 
+    this.alertCtrl.create({
+      title: 'Logout',
+      message: 'Are you sure you want to log out?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('logout cancelled');
+          }
+        }, {
+          text: 'Logout',
+          handler: () => {
+            this.authService.logout().then(() => {
+              this.appUser$ = null;
+            });
+            load.dismiss();
+          }
+        }
+      ]
+    }).present();
 
-    this.authService.logout();
-    load.dismiss();
-    console.log('auth = ' + this.isAuthenticated);
+    console.log('auth = ' + this.appUser$.name);
+  }
+
+  navHome() {
+    if (this.menuRoot === 'TabsPage') {
+      let myRoot = this.nav.getActiveChildNavs()[0];
+
+      if (myRoot.getSelected().root !== 'FeaturedPage') {
+        myRoot.select(0);
+      }
+    } else {
+      this.setRoot('TabsPage');
+    }
+    //console.log(this.nav.getActiveChildNavs()[0].getSelected().root);
+    
+    
   }
 
 
@@ -66,6 +124,10 @@ export class MenuPage {
       position: 'middle',
       duration: 500
     }).present();
+  }
+
+  private setPage(nav: Nav) {
+
   }
 
 }

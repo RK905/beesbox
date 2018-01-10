@@ -12,6 +12,7 @@ import { UserService } from '../app/shared/services/user.service';
 })
 export class MyApp {
   rootPage: string = 'MenuPage';
+  appUser$: any;
 
   constructor(platform: Platform, 
               statusBar: StatusBar, 
@@ -21,6 +22,7 @@ export class MyApp {
 
     this.authService.user$.subscribe((user) => {
         if (!user) return;
+        this.appUser$ = this.authService.appUser$;
         this.userService.saveUser(user);
       });
 

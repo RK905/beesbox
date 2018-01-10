@@ -13,7 +13,7 @@ import { User } from '../../models/user.model';
 })
 export class FeaturedPage implements OnInit {
 
-  curUser$: User;
+  appUser$: any;
   isAuthenticated: boolean;
 
   sampleFeatures: any[] = [
@@ -39,10 +39,11 @@ export class FeaturedPage implements OnInit {
   }
 
   ngOnInit() {
-    /*this.authService.curUser$.subscribe((user: User) => {
-      this.curUser$ = user ? user : null;
-      console.log('curUser = ' + this.curUser$);
-    });*/
+    this.authService.user$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = this.authService.appUser$;
+      console.log('appUser = ' + this.appUser$.name);
+    });
   }
 
   ionViewDidLoad() {

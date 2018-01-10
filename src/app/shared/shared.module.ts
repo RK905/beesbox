@@ -6,10 +6,11 @@ import { IonicModule }  from 'ionic-angular';
 import { AngularFireAuthModule }     from 'angularfire2/auth';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 
-import { AuthService }     from './services/auth.service';
-import { CategoryService } from './services/category.service';
-import { HelperService }   from './services/helper.service';
-import { UserService }     from './services/user.service';
+import { AuthService }        from './services/auth.service';
+import { CategoryService }    from './services/category.service';
+import { HelperService }      from './services/helper.service';
+import { UserService }        from './services/user.service';
+import { WooCommerceService } from './services/woocommerce.service';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { UserService }     from './services/user.service';
         AuthService,
         CategoryService,
         HelperService,
-        UserService
+        UserService,
+        WooCommerceService
     ]
 })
 export class SharedModule { }

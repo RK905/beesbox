@@ -1,32 +1,45 @@
 <ion-menu [content]="content">
   <ion-content>
       <ion-list>
+        <ion-list-header>{{ (appUser$ && appUser$.name) ? appUser$.name : 'Menu' }}</ion-list-header>
 
-          <button
-              menuClose
-              ion-item 
-              icon-left 
-              detail-none 
-              (click)="setRoot('LoginPage')">
-              <ion-icon name="key"></ion-icon>
-              Login
-          </button>
+        <button 
+            menuClose 
+            ion-item 
+            (click)="navHome()">
+            <ion-icon item-left name="home"></ion-icon>
+            Home
+        </button>
 
-          <!--<ng-container *ngIf="isAuthenticated">-->
-              <button ion-item>
-                  Category
-              </button>
+        <ng-container *ngIf="(appUser$ == null || appUser$ == undefined)">
+            <ion-item-divider>Access</ion-item-divider>
+            <button
+                menuClose
+                ion-item 
+                (click)="setRoot('LoginPage')">
+                <ion-icon item-left name="log-in"></ion-icon>
+                Login
+            </button>
+        </ng-container>
+        
+        <ion-item-divider>Categories</ion-item-divider>
+        <button ion-item *ngFor="let cat of catList$">
+            <ion-icon item-left name="baseball"></ion-icon>
+            {{ cat.name }}
+        </button>
 
-              <button
-                  menuClose
-                  ion-item 
-                  icon-left 
-                  detail-none 
-                  (click)="doLogout()">
-                  <ion-icon name="key"></ion-icon>
-                  Logout
-              </button>
-          <!--</ng-container>-->
+        <ng-container *ngIf="!(appUser$ == null || appUser$ == undefined)">
+            <ion-item-divider>Exit</ion-item-divider>
+            <button
+                menuClose
+                ion-item
+                detail-none 
+                (click)="doLogout()">
+                <ion-icon item-left name="exit"></ion-icon>
+                Logout
+            </button>
+        </ng-container>
+        
           
           
       </ion-list>

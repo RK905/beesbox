@@ -9,7 +9,7 @@
 
   <button 
     ion-item
-    *ngIf="curUser !== null" 
+    *ngIf="appUser$ !== null" 
     full 
     block 
     (click)="onShowCartPage()">
@@ -17,7 +17,7 @@
   </button>
   <button 
     ion-item 
-    *ngIf="curUser !== null"
+    *ngIf="appUser$ !== null"
     full 
     block 
     (click)="onShowOrdersPage()">
@@ -29,19 +29,19 @@
     large 
     block 
     full 
-    *ngIf="curUser !== null && newSettings == null"
+    *ngIf="appUser$ !== null && newSettings == null"
     (click)="onShowQuizPage()">
     Begin Personalized Quiz
   </button>
 
   <ion-item 
-    *ngIf="curUser === null" 
+    *ngIf="appUser$ === null" 
     no-lines 
     text-center>
     You are not logged in
   </ion-item>
 
-  <ion-list *ngIf="curUser !== null && newSettings !== null">
+  <ion-list *ngIf="appUser$ !== null && newSettings !== null">
     <ion-item *ngFor="let opt of newSettings">
       {{ opt }}
     </ion-item>

@@ -18,9 +18,8 @@ import * as firebase from 'firebase';
 })
 export class HomePage {
 
-  curUser$: firebase.User;
+  appUser$: any;
   newSettings: Setting;
-  isAuthenticated: boolean;
 
   constructor(
     public navCtrl: NavController, 
@@ -31,10 +30,11 @@ export class HomePage {
   }
 
   ionViewDidLoad() {
-    /*this.authService.curUser$.subscribe((user: User) => {
-      this.curUser$ = user;
-      console.log('curUser = ' + this.curUser$);
-    });*/
+    this.authService.user$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = this.authService.appUser$;
+      console.log('curUser = ' + this.appUser$.name);
+    });
     
 
     console.log('ionViewDidLoad HomePage');

@@ -20,7 +20,7 @@ import { User }            from '../../models/user.model';
 })
 export class LoginPage {
 
-  curUser$: Observable<firebase.User>;
+  appUser$: any;
   status: string = 'signin';
 
   constructor(
@@ -34,33 +34,39 @@ export class LoginPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LoginPage');
+    this.authService.user$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = this.authService.appUser$;
+      console.log('user = ' + this.appUser$.name);
+    })
   }
 
   doLogin(method: string, form?: NgForm) {
-    let email: string;
-    let password: string;
-    if (form) {
-      email = form.value.email;
-      password = form.value.password;
-    }
-
+    
     let loader = this.loadingCtrl.create({
       content: 'Logging in'
     });
 
     loader.present();
 
-    loader.onDidDismiss(() => {
-      if (this.authService.user$) {
-        console.log('a ' + this.authService.user$);
-        let successMsg: string = 'Success: Logged in as ' + this.authService.user$;
+    loader.onDidDismiss((data) => {
+      if (data && data.user) {
+        let successMsg: string = 'Success: Logged in as ' + this.appUser$.name;
+        //console.log(data.user.displayName);
+        /*console.log('a ' + this.appUser$.name);
+        let successMsg: string = 'Success: Logged in as ' + this.appUser$.name;*/
         this.handleToast(successMsg);
       } else {
         let errMsg: string = 'Error: Login failed';
         this.handleToast(errMsg);
       }
     });
-    if (method === 'email' && form) {
+
+    /** EMAIL LOGIN */
+    if (method === 'email' && form.valid) {
+      const email: string = form.value.email;
+      const password: string = form.value.password;
+
       this.authService.loginEmail(email, password)
         .then((data) => {
           //console.log(data);
@@ -68,20 +74,23 @@ export class LoginPage {
           this.navCtrl.setRoot('TabsPage');
         })
         .catch((error) => {
-          console.log(error.message);
+          //console.log(error.message);
+          loader.dismiss();
+        });
+    }
+    /** GOOGLE LOGIN */
+    else if (method === 'google') {
+      this.authService.loginGoogle()
+        .then((data) => {
+          //console.log(data);
+          loader.dismiss(data);
+          this.navCtrl.setRoot('TabsPage');
+        })
+        .catch((error) => {
+          //console.log(error.message);
           loader.dismiss();
         });
       }
-    /*this.authService.signinEmail(form.value.email, form.value.password)
-      .then((data) => {
-        //console.log(data);
-        loader.dismiss();
-        this.navCtrl.setRoot('TabsPage');
-      })
-      .catch((error) => {
-        console.log(error.message);
-        loader.dismiss();
-      });*/
   }
 
   doRegister(form: NgForm) {

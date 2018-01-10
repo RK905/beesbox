@@ -3,8 +3,6 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { AuthService } from '../../app/shared/services/auth.service';
 
-import * as firebase from 'firebase';
-
 
 @IonicPage()
 @Component({
@@ -13,7 +11,7 @@ import * as firebase from 'firebase';
 })
 export class ShoppingCartPage implements OnInit {
 
-  curUser$: firebase.User;
+  appUser$: any;
   cartCount: number = 0;
 
   constructor(
@@ -23,9 +21,10 @@ export class ShoppingCartPage implements OnInit {
   }
 
   ngOnInit() {
-    //this.authService.user$.subscribe((user) => {
-
-    //})
+    this.authService.user$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = this.authService.appUser$;
+    });
   }
 
   ionViewDidLoad() {

@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit }  from '@angular/core';
 
 import { IonicPage, 
          NavController, 
-         NavParams }       from 'ionic-angular';
+         NavParams }          from 'ionic-angular';
 
-import { Observable }      from 'rxjs/Observable';
-import * as firebase       from 'firebase';
+import { Observable }         from 'rxjs/Observable';
+import * as firebase          from 'firebase';
 
-import {ToolbarAnimation } from '../../animations/toolbar.animation';
-import { AuthService }     from '../../app/shared/services/auth.service';
-//import { SearchService }   from '../../app/shared/services/search.service';
-import { HelperService }   from '../../app/shared/services/helper.service';
-import { User }            from '../../models/user.model';
+import {ToolbarAnimation }    from '../../animations/toolbar.animation';
+import { AuthService }        from '../../app/shared/services/auth.service';
+import { HelperService }      from '../../app/shared/services/helper.service';
+import { WooCommerceService }      from '../../app/shared/services/woocommerce.service';
+import { User }               from '../../models/user.model';
 
 
 
@@ -25,10 +25,11 @@ import { User }            from '../../models/user.model';
 })
 export class ProductsPage implements OnInit {
 
-  curUser$: firebase.User;
-  isAuthenticated: boolean;
-  view: string = 'list';
+  wooCom: any;
+  appUser$: any;
+  selectedView: string = 'list';
 
+  productList$: any;
   sampleProducts: any[] = [
     {
       title: 'Item 1',
@@ -61,9 +62,10 @@ export class ProductsPage implements OnInit {
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
+    private wooService: WooCommerceService,
     private authService: AuthService, 
-    //public searchService: SearchService,
     public helperService: HelperService) {
+      this.wooCom = this.wooService.init();
   }
 
   ionViewDidLoad() {
@@ -74,18 +76,18 @@ export class ProductsPage implements OnInit {
 
 
   ngOnInit() {
-    /*this.wooApi.fetchItems('products')
-      .then((products) => {
-        console.log('productList = ' + products);
-      });*/
-    this.authService.user$.subscribe((user) => {
-      this.curUser$ = user;
-      console.log('curUser = ' + this.curUser$);
+    this.wooCom.getAsync('products').then((products) => {
+      this.productList$ = JSON.parse(products.toJSON().body);
+      console.log(...this.productList$);
+    }).catch((error) => {
+      console.log(error);
     });
 
-    /*this.searchService.view.subscribe((state: string) => {
-      this.view = state;
-    });*/
+    this.authService.user$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = this.authService.appUser$;
+      console.log('curUser = ' + this.appUser$.name);
+    });
   }
 
 }

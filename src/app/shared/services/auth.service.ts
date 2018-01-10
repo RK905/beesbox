@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 
-import { AppUser } from '../models/app-user.model';
-import { AngularFireObject } from 'angularfire2/database';
+import { AngularFireAuth } from 'angularfire2/auth';
 import { UserService } from './user.service';
+import { AppUser } from '../models/app-user.model';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/of';
 
 import * as firebase from 'firebase';
-import { AngularFireAuth } from 'angularfire2/auth';
 
 
 @Injectable()
@@ -23,7 +22,7 @@ export class AuthService {
 
     loginGoogle() {
         let googleAuth = new firebase.auth.GoogleAuthProvider();
-        this.afAuth.auth.signInWithPopup(googleAuth);
+        return this.afAuth.auth.signInWithPopup(googleAuth);
     }
 
     loginEmail(email:string, password: string) {
@@ -31,15 +30,21 @@ export class AuthService {
     }
 
     logout() {
-        this.afAuth.auth.signOut();
+        return this.afAuth.auth.signOut();
     }
 
-    /*get appUser$(): Observable<AppUser> {
-        return this.user$  
-            .switchMap((user: firebase.User) => {
-                if (user) return this.userService.getUser(user.uid);
+    register(email: string, password: string) {
+        return this.afAuth.auth.createUserWithEmailAndPassword(email, password);
+    }
 
-                return Observable.of(null);
+    get appUser$(): Observable<AppUser> {
+        return this.user$
+            .switchMap((user) => {
+                if (user) {
+                    return this.userService.getUser(user.uid).valueChanges();
+                } else {
+                    return Observable.of(null);
+                }
             });
-    }*/
+    }
 }

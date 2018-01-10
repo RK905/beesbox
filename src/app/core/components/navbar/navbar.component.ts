@@ -7,7 +7,9 @@ import { NavController,
          ToastController } from 'ionic-angular';
 
 import { AuthService } from '../../../shared/services/auth.service';
+import { AppUser } from '../../../shared/models/app-user.model';
 import { HelperService } from '../../../shared/services/helper.service';
+import { UserService } from '../../../shared/services/user.service';
 
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase';
@@ -21,8 +23,7 @@ import * as firebase from 'firebase';
 export class NavbarComponent implements OnInit{
 
   curUser$: firebase.User;
-  isAuthenticated: boolean = false;
-  isAdmin: boolean = false;
+  appUser$: any;
   headerSize: string ='48px';
   currentPage: string;
   
@@ -33,58 +34,36 @@ export class NavbarComponent implements OnInit{
     public loadingCtrl: LoadingController,
     public toastCtrl: ToastController,
     public authService: AuthService,
-    public helperService: HelperService
+    public helperService: HelperService,
+    public userService: UserService
   ) {
-    
-  }
-
-  ngOnInit() {
 
     this.authService.user$.subscribe((u) => {
-      this.curUser$ = u;
-      //this.isAdmin = (this.curUser$) ? this.curUser$.isAdmin : false;
-      console.log('curUser = ' + this.curUser$);
+      if (!u) return;
+      this.appUser$ = this.authService.appUser$;
     });
     this.helperService.curPage.subscribe((page: string) => {
       this.currentPage = page;
       console.log('page = ' + this.currentPage);
-    })
-    //console.log('page ' + this.navCtrl.parent.parent.getActiveChildNavs()[0].root === undefined ? 0 : this.navCtrl.parent.parent.getActiveChildNavs()[0]);
+    });
   }
 
-  onLogin() {
-    let loader = this.loadingCtrl.create({
-      content: 'Logging in'
+  ngOnInit() {
+
+    /*this.authService.user$.subscribe((u) => {
+      if (!u) return;
+      this.curUser$ = u;
+      this.appUser$ = this.userService.getUser(u.uid);
+      this.isAdmin
+      //this.isAdmin = (this.curUser$) ? this.curUser$.isAdmin : false;
+      console.log('curUser = ' + this.curUser$.toJSON());
     });
-
-    loader.present();
-
-    loader.onDidDismiss(() => {
-      /*if (this.authService.) {
-        let successMsg: string = 'Logged in as ' + this.curUser.displayName;
-        this.toastHandler(successMsg);
-        //this.navCtrl.parent.parent.getActiveChildNavs()[0].select(2);
-      } else {
-
-        let errMsg: string = 'Login failed';
-        this.toastHandler(errMsg);
-      }*/
+    this.helperService.curPage.subscribe((page: string) => {
+      this.currentPage = page;
+      console.log('page = ' + this.currentPage);
     });
-
-    /*this.authService.signinEmail('test@test.com', 'test123').then((data) => {
-      console.log(data);
-      loader.dismiss();
-    }, (error) => {
-      loader.dismiss();
-      this.alertCtrl.create({
-        title: 'Signin failed',
-        message: error.message,
-        buttons: ['OK']
-      }).present();
-    });
-    //this.authService.setUser(new User('Joel J', 'test@test.com', true, 1, []));
-    //loader.dismiss();*/
-    
+    console.log()
+    //console.log('page ' + this.navCtrl.parent.parent.getActiveChildNavs()[0].root === undefined ? 0 : this.navCtrl.parent.parent.getActiveChildNavs()[0]);*/
   }
 
   onLogout() {
@@ -101,19 +80,7 @@ export class NavbarComponent implements OnInit{
         }, {
           text: 'Logout',
           handler: () => {
-
             this.authService.logout();
-            /**DUMMY LOGOUT */
-            /*this.authService.setUser();
-            if (this.curUser === null) {
-              let successMsg: string = 'Logged out';
-              this.toastHandler(successMsg);
-              //this.navCtrl.parent.parent.getActiveChildNavs()[0].select(0);
-            } else {
-              let errMsg: string = 'Logout error'
-              this.toastHandler(errMsg);
-            }*/
-            /** END DUMMY LOGOUT */
           }
         }
       ]
@@ -126,29 +93,36 @@ export class NavbarComponent implements OnInit{
   }
 
   onShowAdminOptions() {
-    this.actionCtrl.create({
-      title: 'Admin Controls',
-      buttons: [
-        {
-          text: 'Manage Orders',
-          handler: () => {
-            this.navCtrl.push('AdminOrdersPage');
+    if (this.appUser$.isAdmin) {
+
+      this.actionCtrl.create({
+        title: 'Admin Controls',
+        buttons: [
+          {
+            text: 'Manage Orders',
+            handler: () => {
+              this.navCtrl.push('AdminOrdersPage');
+            }
+          }, {
+            text: 'Manage Products',
+            handler: () => {
+             this.navCtrl.push('AdminProductsPage');
+            }
+          }, {
+            text: 'Cancel',
+            role: 'cancel'
           }
-        }, {
-          text: 'Manage Products',
-          handler: () => {
-           this.navCtrl.push('AdminProductsPage');
-          }
-        }, {
-          text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
-    }).present();
+        ]
+      }).present();
+
+    } else {
+      return;
+    }
+    
   }
 
   onAnonClick() {
-    let msg: string = 'You are not logged in';
+    let msg: string = 'You are not logged in/not admin';
     this.toastHandler(msg);
   }
 
@@ -159,9 +133,4 @@ export class NavbarComponent implements OnInit{
       duration: 1500
     }).present();
   }
-
-  doLogin() {
-    this.navCtrl.push('LoginPage');
-  }
-
 }
