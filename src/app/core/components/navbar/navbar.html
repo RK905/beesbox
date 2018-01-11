@@ -1,4 +1,4 @@
-<ion-navbar padding-vertical color="bees">
+<ion-navbar padding color="bees" hideBackButton>
 
     <ion-buttons left>
       <button
@@ -6,7 +6,7 @@
         icon-only
         menuToggle 
         large>
-        <ion-icon [ngStyle]="{ 'font-size': headerSize }" name="happy"></ion-icon>
+        <ion-icon large name="happy"></ion-icon>
       </button>
     </ion-buttons>
   
@@ -15,7 +15,7 @@
       {{ (appUser$ === null || (appUser$ !== null && currentPage !== 'HomePage')) ? 'My Beesbox' : appUser$.name }}
     </ion-label>
   
-    <ion-buttons right>
+    <!--<ion-buttons right>
       <button 
         padding-right
         ion-button 
@@ -25,6 +25,6 @@
         <ion-icon name="cart"></ion-icon>
         <ion-badge item-end>0</ion-badge>
       </button>
-    </ion-buttons>
+    </ion-buttons>-->
   
   </ion-navbar>

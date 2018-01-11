@@ -1,0 +1,24 @@
+<ion-header>
+
+  <ion-navbar  padding-vertical color="bees" hideBackButton>
+    <ion-buttons left>
+      <button ion-button icon-only navPop>
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>{{ product.name }}</ion-title>
+    <ion-buttons right>
+      <button ion-button icon-only (click)="onAddToCart(product)">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-card>
+    <img [src]="product.images[0].src" />
+  </ion-card>
+</ion-content>

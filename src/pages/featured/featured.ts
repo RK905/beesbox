@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+
+import { IonicPage, 
+         NavController, 
+         NavParams } from 'ionic-angular';
 
 import { AuthService } from '../../app/shared/services/auth.service';
 import { HelperService } from '../../app/shared/services/helper.service';
-import { User } from '../../models/user.model';
+import { AppUser } from '../../app/shared/models/app-user.model';
 
 
 @IonicPage()
@@ -14,7 +17,6 @@ import { User } from '../../models/user.model';
 export class FeaturedPage implements OnInit {
 
   appUser$: any;
-  isAuthenticated: boolean;
 
   sampleFeatures: any[] = [
     {
@@ -36,14 +38,16 @@ export class FeaturedPage implements OnInit {
               public navParams: NavParams, 
               public authService: AuthService,
               public helperService: HelperService) {
-  }
-
-  ngOnInit() {
+                
     this.authService.user$.subscribe((user) => {
       if (!user) return;
       this.appUser$ = this.authService.appUser$;
       console.log('appUser = ' + this.appUser$.name);
     });
+  }
+
+  ngOnInit() {
+    
   }
 
   ionViewDidLoad() {

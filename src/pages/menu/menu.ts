@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+
 import { IonicPage, 
          Nav,
          NavController, 
@@ -12,9 +13,6 @@ import { HelperService }        from '../../app/shared/services/helper.service';
 import { UserService }          from '../../app/shared/services/user.service';
 import { WooCommerceService }   from '../../app/shared/services/woocommerce.service';
 
-import { Observable } from 'rxjs/Observable';
-import * as firebase  from 'firebase';
-
 
 @IonicPage()
 @Component({
@@ -25,11 +23,10 @@ export class MenuPage {
 
   @ViewChild(Nav) nav: Nav;
   menuRoot: string = 'TabsPage';
+  loginPage: string = 'LoginPage';
   appUser$: any;
   wooCom: any;
   catList$: any;
-
-  categories$: any[];
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -51,7 +48,9 @@ export class MenuPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MenuPage');
+
     this.wooCom.getAsync('products/categories').then((categories) => {
+      console.log(JSON.parse(categories.body).produc_categories);
       this.catList$ = JSON.parse(categories.toJSON().body);
       console.log(...this.catList$);
     }).catch((error) => {
@@ -62,7 +61,7 @@ export class MenuPage {
   setRoot(page: string) {
     
     this.menuRoot = page;
-    this.navCtrl.getActiveChildNavs()[0].setRoot(page);
+    this.nav.setRoot(page);
   }
 
   doLogout() {
@@ -106,11 +105,11 @@ export class MenuPage {
     if (this.menuRoot === 'TabsPage') {
       let myRoot = this.nav.getActiveChildNavs()[0];
 
-      if (myRoot.getSelected().root !== 'FeaturedPage') {
+      if (this.nav.getActive().name !== 'FeaturedPage') {
         myRoot.select(0);
       }
     } else {
-      this.setRoot('TabsPage');
+      this.nav.setRoot('TabsPage');
     }
     //console.log(this.nav.getActiveChildNavs()[0].getSelected().root);
     
@@ -125,9 +124,4 @@ export class MenuPage {
       duration: 500
     }).present();
   }
-
-  private setPage(nav: Nav) {
-
-  }
-
 }

@@ -12,7 +12,7 @@ import { AuthService } from '../../app/shared/services/auth.service';
 export class ShoppingCartPage implements OnInit {
 
   appUser$: any;
-  cartCount: number = 0;
+  cart: any[] = [];
 
   constructor(
       public navCtrl: NavController, 

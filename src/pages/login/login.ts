@@ -29,16 +29,17 @@ export class LoginPage {
     public loadingCtrl: LoadingController,
     public toastCtrl: ToastController,
     private authService: AuthService) {
-  
+      
+      this.authService.user$.subscribe((user) => {
+        if (!user) return;
+        this.appUser$ = this.authService.appUser$;
+        console.log('user = ' + this.appUser$.name);
+      })
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LoginPage');
-    this.authService.user$.subscribe((user) => {
-      if (!user) return;
-      this.appUser$ = this.authService.appUser$;
-      console.log('user = ' + this.appUser$.name);
-    })
+    
   }
 
   doLogin(method: string, form?: NgForm) {
@@ -70,11 +71,11 @@ export class LoginPage {
       this.authService.loginEmail(email, password)
         .then((data) => {
           //console.log(data);
-          loader.dismiss();
+          loader.dismiss(data);
           this.navCtrl.setRoot('TabsPage');
         })
         .catch((error) => {
-          //console.log(error.message);
+          console.log(error.message);
           loader.dismiss();
         });
     }
@@ -87,7 +88,7 @@ export class LoginPage {
           this.navCtrl.setRoot('TabsPage');
         })
         .catch((error) => {
-          //console.log(error.message);
+          console.log(error.message);
           loader.dismiss();
         });
       }

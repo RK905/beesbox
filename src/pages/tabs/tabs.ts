@@ -27,6 +27,10 @@ export class TabsPage {
     title: 'Browse',
     icon: 'search'
   }, {
+    rootPage: 'ShoppingCartPage',
+    title: 'Cart',
+    icon: 'cart'
+  }, {
     rootPage: 'HomePage',
     title: 'Account',
     icon: 'person'

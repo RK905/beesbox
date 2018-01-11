@@ -3,10 +3,9 @@
   <nav-bar></nav-bar>
 
   <!--SEARCHBAR-->
-  <ion-toolbar no-padding no-margin no-border>
+  <ion-toolbar no-padding no-border color="bees">
 
-    <ion-searchbar  
-      no-margin
+    <ion-searchbar
       placeholder="Search"
       [showCancelButton]="false"
       [(ngModel)]="myQuery" 
@@ -16,11 +15,26 @@
   
   </ion-toolbar>
       
-  <ion-toolbar no-padding no-margin no-border>
-  
+  <!-- LIST-VIEW / GRID-VIEW -->
+  <ion-toolbar no-border ion-row align-items-center>
+
+    <ion-buttons 
+      *ngIf="selectedView === 'grid'"
+      ion-col 
+      align-self-center 
+      left>
+      <button 
+        ion-button 
+        icon-only 
+        [disabled]="isXs" 
+        (click)="onReduceGrid()">
+        <ion-icon name="remove"></ion-icon>
+      </button>
+    </ion-buttons>
     <ion-segment 
       [(ngModel)]="selectedView" 
-      no-margin 
+      ion-col
+      align-self-center
       no-border>
   
         <ion-segment-button value="list">
@@ -32,6 +46,19 @@
         </ion-segment-button>
   
       </ion-segment>
+      <ion-buttons 
+        *ngIf="selectedView === 'grid'"
+        ion-col 
+        align-self-center 
+        right>
+        <button 
+          ion-button 
+          icon-only 
+          [disabled]="isLg"
+          (click)="onIncreaseGrid()">
+          <ion-icon name="add"></ion-icon>
+        </button>
+      </ion-buttons>
   
   </ion-toolbar>
 </ion-header>
@@ -40,22 +67,61 @@
 <ion-content #content>
   <ng-container [ngSwitch]="selectedView">
     
+      
       <ion-list *ngSwitchCase="'list'">
-        <button ion-item *ngFor="let prod of sampleProducts" details-none>
+        <button 
+          ion-item 
+          *ngFor="let prod of productList$ | async"
+          (click)="showProductDetails(prod)">
+          <ion-thumbnail item-left>
+              <img [src]="prod.images[0].src" [alt]="prod.name" />
+          </ion-thumbnail>
+          <h2>{{ prod.name }}</h2>
+          <h3 [innerHTML]="prod.short_description"></h3>
+          <p [innerHTML]="prod.price | currency:'USD':true"></p>
+        </button>
+
+
+
+
+        <!-- SAMPLE ITEM LIST -->
+        <!--<button ion-item *ngFor="let prod of sampleProducts" details-none>
           <ion-icon item-left [name]="prod.img"></ion-icon>
           <h2>{{ prod.title }}</h2>
           <p>{{ prod.desc }}</p>
           <ion-note>
             {{ prod.price }}
           </ion-note>
-        </button>
+        </button>-->
       </ion-list>
 
 
 
-      <ion-grid *ngSwitchCase="'grid'" padding-horizontal>
-          <ion-row>
-            <ion-col col-6 *ngFor="let prod of sampleProducts">
+      <ion-grid *ngSwitchCase="'grid'" no-padding>
+          <ion-row no-padding>
+
+            <ion-col 
+              [attr.col-6]="isSm ? true : null"
+              [attr.col-auto]="isXs ? true : null"
+              [attr.col-4]="isLg ? true : null" 
+              no-padding 
+              *ngFor="let prod of productList$">
+              <ion-card (click)="showProductDetails(prod)">
+                <ion-card-header text-center>
+                  {{ prod.name }}
+                </ion-card-header>
+    
+                <ion-card-content text-center>
+                    <ion-thumbnail>
+                      <img [src]="prod.images[0].src" />
+                      <ion-label [innerHTML]="prod.price | currency:'USD':true"></ion-label>
+                    </ion-thumbnail>
+                </ion-card-content>
+                </ion-card>
+            </ion-col>
+
+            <!-- SAMPLE GRID -->
+            <!--<ion-col col-6 *ngFor="let prod of sampleProducts">
               <ion-card>
                 <ion-card-header text-center>
                   {{ prod.title }}
@@ -66,7 +132,7 @@
                 </ion-card-content>
               </ion-card>
               
-            </ion-col>
+            </ion-col>-->
           </ion-row>
         </ion-grid>
 

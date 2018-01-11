@@ -8,29 +8,21 @@
 <ion-content padding>
 
   <button 
-    ion-item
-    *ngIf="appUser$ !== null" 
-    full 
-    block 
-    (click)="onShowCartPage()">
-    <ion-icon name="cart" item-left></ion-icon>View cart
-  </button>
-  <button 
     ion-item 
     *ngIf="appUser$ !== null"
     full 
     block 
-    (click)="onShowOrdersPage()">
+    [navPush]="ordersPage">
     <ion-icon name="pricetags" item-left></ion-icon>View my orders
   </button>
 
   <button 
-    ion-button 
-    large 
+    ion-item
     block 
     full 
     *ngIf="appUser$ !== null && newSettings == null"
     (click)="onShowQuizPage()">
+    <ion-icon item-left name="person"></ion-icon>
     Begin Personalized Quiz
   </button>
 

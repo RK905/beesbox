@@ -21,36 +21,26 @@ export class HomePage {
   appUser$: any;
   newSettings: Setting;
 
+  cartPage: string = 'ShoppingCartPage';
+  ordersPage: string = 'MyOrdersPage';
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public modalCtrl: ModalController,
     private authService: AuthService,
     public helperService: HelperService) {
+
+      this.authService.user$.subscribe((user) => {
+        if (!user) return;
+        this.appUser$ = this.authService.appUser$;
+        console.log('curUser = ' + this.appUser$.name);
+      });
   }
 
   ionViewDidLoad() {
-    this.authService.user$.subscribe((user) => {
-      if (!user) return;
-      this.appUser$ = this.authService.appUser$;
-      console.log('curUser = ' + this.appUser$.name);
-    });
-    
-
     console.log('ionViewDidLoad HomePage');
-  }
-
-  onNavHome() {
-    this.navCtrl.popToRoot();
-  }
-
-  onShowCartPage() {
-    this.navCtrl.push('ShoppingCartPage');
-  }
-
-  onShowOrdersPage() {
-    this.navCtrl.push('MyOrdersPage');
-  }
+  }  
 
   onShowQuizPage() {
     let quizModal = this.modalCtrl.create('QuizPage')

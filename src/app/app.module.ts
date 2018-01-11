@@ -2,6 +2,7 @@ import { BrowserModule }           from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ErrorHandler, NgModule }  from '@angular/core';
 import { HttpModule }              from '@angular/http';
+import { IonicStorageModule }      from '@ionic/storage';
 import { environment }             from '../environments/environment';
 
 import { IonicApp, 
@@ -28,6 +29,7 @@ import { MyApp }            from './app.component';
     CoreModule,
     SharedModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    IonicStorageModule.forRoot(),
     IonicModule.forRoot(MyApp, {
       backButtonText: ''
     })

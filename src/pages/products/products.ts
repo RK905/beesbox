@@ -4,15 +4,11 @@ import { IonicPage,
          NavController, 
          NavParams }          from 'ionic-angular';
 
-import { Observable }         from 'rxjs/Observable';
-import * as firebase          from 'firebase';
-
 import {ToolbarAnimation }    from '../../animations/toolbar.animation';
 import { AuthService }        from '../../app/shared/services/auth.service';
 import { HelperService }      from '../../app/shared/services/helper.service';
 import { WooCommerceService }      from '../../app/shared/services/woocommerce.service';
-import { User }               from '../../models/user.model';
-
+import { AppUser } from '../../app/shared/models/app-user.model';
 
 
 @IonicPage()
@@ -28,6 +24,10 @@ export class ProductsPage implements OnInit {
   wooCom: any;
   appUser$: any;
   selectedView: string = 'list';
+
+  isXs: boolean;
+  isSm: boolean;
+  isLg: boolean;
 
   productList$: any;
   sampleProducts: any[] = [
@@ -65,7 +65,25 @@ export class ProductsPage implements OnInit {
     private wooService: WooCommerceService,
     private authService: AuthService, 
     public helperService: HelperService) {
+
+      this.authService.user$.subscribe((user) => {
+        if (!user) return;
+        this.appUser$ = this.authService.appUser$;
+        console.log('curUser = ' + this.appUser$.name);
+      });
+
       this.wooCom = this.wooService.init();
+
+      this.wooCom.getAsync('products').then((products) => {
+        this.productList$ = JSON.parse(products.toJSON().body);
+        console.log(...this.productList$);
+      }).catch((error) => {
+        console.log(error);
+      });
+
+      this.isSm = true;
+      this.isLg = false;
+      this.isXs = false;
   }
 
   ionViewDidLoad() {
@@ -74,20 +92,40 @@ export class ProductsPage implements OnInit {
     
   }
 
+  showProductDetails(product) {
+    this.navCtrl.push('ProductDetailsPage', { product: product });
+  }
+
+  onReduceGrid() {
+
+    if (this.isXs) return;
+    else if (this.isSm) {
+      this.isSm = !this.isSm;
+      this.isXs = !this.isXs;
+    }
+    else {//this.isLg
+      this.isLg = !this.isLg;
+      this.isSm = !this.isSm;
+    }
+  }
+
+  onIncreaseGrid() {
+    if (this.isLg) return;
+    else if (this.isSm) {
+      this.isSm = !this.isSm;
+      this.isLg = !this.isLg;
+    }
+    else { //this.isXs
+      this.isXs = !this.isXs;
+      this.isSm = !this.isSm
+    }
+  }
+
 
   ngOnInit() {
-    this.wooCom.getAsync('products').then((products) => {
-      this.productList$ = JSON.parse(products.toJSON().body);
-      console.log(...this.productList$);
-    }).catch((error) => {
-      console.log(error);
-    });
+    
 
-    this.authService.user$.subscribe((user) => {
-      if (!user) return;
-      this.appUser$ = this.authService.appUser$;
-      console.log('curUser = ' + this.appUser$.name);
-    });
+    
   }
 
 }

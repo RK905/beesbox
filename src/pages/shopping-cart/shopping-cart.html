@@ -10,4 +10,34 @@
 
 <ion-content padding>
 
+  <ng-container *ngIf="cart.length > 0; else noCart">
+
+  </ng-container>
+
+  <ng-template #noCart text-center>
+    Cart is empty!
+  </ng-template>
 </ion-content>
+
+<ion-footer ion-row>
+  <button 
+    color="danger"
+    [disabled]="cart.length < 1" 
+    ion-button 
+    full 
+    block 
+    ion-col 
+    col-6>
+    Clear cart
+  </button>
+
+  <button 
+    ion-button
+    [disabled]="cart.length < 1" 
+    full 
+    block 
+    ion-col 
+    col-6>
+    Checkout
+  </button>
+</ion-footer>

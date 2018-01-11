@@ -89,6 +89,7 @@ export class NavbarComponent implements OnInit{
   }
 
   onShowCart() {
+    if (this.navCtrl.parent.getActiveChildNavs())
     this.navCtrl.push('ShoppingCartPage');
   }
 
