@@ -10,19 +10,47 @@
 
 <ion-content padding>
 
-  <ng-container *ngIf="cart.length > 0; else noCart">
+  <ion-list>
+    <ion-list-header text-center>
+        <ng-container *ngIf="appUser$?.name; else anon">
+          {{ appUser$.name }}'s cart
+        </ng-container>
+        <ng-template #anon>
+          Welcome, anonymous user
+        </ng-template>
+    </ion-list-header>
+    
+    <ng-container *ngIf="!cart?.length; else showCart">
+        <ion-item text-center>
+          Cart is empty!
+        </ion-item>
+      
+    </ng-container>
 
-  </ng-container>
-
-  <ng-template #noCart text-center>
-    Cart is empty!
-  </ng-template>
+    <ng-template #showCart>
+        <ion-item *ngFor="let item of cart; let i = index">
+            <h2>{{ item.product.name }}</h2>
+            <p>{{ item.itemPrice | currency:'USD':'symbol' }}</p>
+            <ion-note item-left>{{ item.quantity }}</ion-note>
+            <button 
+              ion-fab 
+              mini
+              item-right 
+              icon-only
+              color="danger"
+              (click)="removeFromCart(i)">
+              <ion-icon name="close"></ion-icon>
+            </button>
+          </ion-item>
+    </ng-template>
+  </ion-list>
 </ion-content>
 
 <ion-footer ion-row>
-  <button 
-    color="danger"
-    [disabled]="cart.length < 1" 
+  <button
+    (click)="onClearCart()" 
+    [disabled]="!cart?.length" 
+    color="danger" 
     ion-button 
     full 
     block 
@@ -33,7 +61,7 @@
 
   <button 
     ion-button
-    [disabled]="cart.length < 1" 
+    [disabled]="!cart?.length" 
     full 
     block 
     ion-col 

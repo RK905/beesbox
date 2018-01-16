@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-import { AuthService } from '../../app/shared/services/auth.service';
-import { HelperService } from '../../app/shared/services/helper.service';
+import { IonicPage, 
+         NavController, 
+         NavParams }         from 'ionic-angular';
 
-import * as firebase from 'firebase';
+import { AuthService }       from '../../app/shared/services/auth.service';
+import { HelperService }     from '../../app/shared/services/helper.service';
+import { AppUser }           from '../../app/shared/models/app-user.model';
+
 
 @IonicPage()
 @Component({
@@ -13,8 +16,11 @@ import * as firebase from 'firebase';
 })
 export class MyOrdersPage implements OnInit {
 
-  curUser$: firebase.User;
-  orderList: string[] = [];
+  appUser$: AppUser;
+  orderList: string[] = [
+    'item 1',
+    'item 2'
+  ];
 
   constructor(
     public navCtrl: NavController, 
@@ -28,14 +34,10 @@ export class MyOrdersPage implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.user$.subscribe((user) => {
-      this.curUser$ = user;
+    this.authService.appUser$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = user;
     });
-    
-    this.orderList = [
-      'item 1',
-      'item 2'
-    ];
   }
 
   ionViewDidLeave() {

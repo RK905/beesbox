@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CategoryService } from '../../../shared/services/category.service';
 
 
 @Component({
@@ -8,10 +7,9 @@ import { CategoryService } from '../../../shared/services/category.service';
 })
 export class NewProductComponent {
 
-  categories$;
+  
 
-  constructor(catService: CategoryService) {
-    this.categories$ = catService.getAll();
+  constructor() {
   }
 
 }

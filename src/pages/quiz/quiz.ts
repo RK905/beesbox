@@ -4,10 +4,10 @@ import { IonicPage,
          ViewController, 
          NavParams, 
          Button, 
-         Slides } from 'ionic-angular';
+         Slides }               from 'ionic-angular';
 
-import { Question, SurveyOpt } from '../../models/question.model';
-import { Setting }             from '../../models/user.model';
+//import { Question, SurveyOpt }  from '../../models/question.model';
+//import { Setting }              from '../../models/user.model';
 
 
 @IonicPage()
@@ -37,7 +37,8 @@ export class QuizPage {
 
 
 
-  constructor(public viewCtrl: ViewController, public navParams: NavParams) {
+  constructor(public viewCtrl: ViewController, 
+              public navParams: NavParams) {
   }
 
   ionViewDidLoad() {

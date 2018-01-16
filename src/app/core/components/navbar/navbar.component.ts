@@ -1,19 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { NavController, 
          ActionSheetController, 
          AlertController, 
          LoadingController, 
-         ToastController } from 'ionic-angular';
+         ToastController }   from 'ionic-angular';
 
-import { AuthService } from '../../../shared/services/auth.service';
-import { AppUser } from '../../../shared/models/app-user.model';
-import { HelperService } from '../../../shared/services/helper.service';
-import { UserService } from '../../../shared/services/user.service';
-
-import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase';
-
+import { AuthService }       from '../../../shared/services/auth.service';
+import { AppUser }           from '../../../shared/models/app-user.model';
+import { HelperService }     from '../../../shared/services/helper.service';
+import { ShoppingCartService } from '../../../shared/services/shopping-cart.service';
+import { UserService }       from '../../../shared/services/user.service';
+import { Item } from '../../../shared/models/item.model';
+import { Storage } from '@ionic/storage';
 
 
 @Component({
@@ -22,48 +21,41 @@ import * as firebase from 'firebase';
 })
 export class NavbarComponent implements OnInit{
 
-  curUser$: firebase.User;
-  appUser$: any;
+  appUser$: AppUser;
   headerSize: string ='48px';
   currentPage: string;
-  
-  constructor(
-    public navCtrl: NavController, 
-    public actionCtrl: ActionSheetController,
-    public alertCtrl: AlertController,
-    public loadingCtrl: LoadingController,
-    public toastCtrl: ToastController,
-    public authService: AuthService,
-    public helperService: HelperService,
-    public userService: UserService
-  ) {
+  cart: Item[] = [];
 
-    this.authService.user$.subscribe((u) => {
-      if (!u) return;
-      this.appUser$ = this.authService.appUser$;
-    });
-    this.helperService.curPage.subscribe((page: string) => {
-      this.currentPage = page;
-      console.log('page = ' + this.currentPage);
+  cartCount: number;
+  
+  constructor(public navCtrl: NavController, 
+              public actionCtrl: ActionSheetController,
+              public alertCtrl: AlertController,
+              public loadingCtrl: LoadingController,
+              public toastCtrl: ToastController,
+              public authService: AuthService,
+              public helperService: HelperService,
+              public cartService: ShoppingCartService,
+              public userService: UserService,
+              public storage: Storage) { 
+
+    this.storage.get('cart').then((data: Item[]) => {
+      this.cart = (data.length || data != null) ? data.slice() : [];
     });
   }
 
   ngOnInit() {
+    this.authService.appUser$.subscribe((user) => this.appUser$ = user);
+    this.helperService.curPage.subscribe((page: string) => this.currentPage = page);
+  }
 
-    /*this.authService.user$.subscribe((u) => {
-      if (!u) return;
-      this.curUser$ = u;
-      this.appUser$ = this.userService.getUser(u.uid);
-      this.isAdmin
-      //this.isAdmin = (this.curUser$) ? this.curUser$.isAdmin : false;
-      console.log('curUser = ' + this.curUser$.toJSON());
-    });
-    this.helperService.curPage.subscribe((page: string) => {
-      this.currentPage = page;
-      console.log('page = ' + this.currentPage);
-    });
-    console.log()
-    //console.log('page ' + this.navCtrl.parent.parent.getActiveChildNavs()[0].root === undefined ? 0 : this.navCtrl.parent.parent.getActiveChildNavs()[0]);*/
+  getCartCount() {
+    let counter: number = 0;
+    if (!this.cart) return;
+    for (let item of this.cart) {
+      counter += item.quantity;
+    }
+    this.cartCount = counter;
   }
 
   onLogout() {
@@ -89,8 +81,9 @@ export class NavbarComponent implements OnInit{
   }
 
   onShowCart() {
-    if (this.navCtrl.parent.getActiveChildNavs())
-    this.navCtrl.push('ShoppingCartPage');
+    this.navCtrl.setRoot('TabsPage', { selectedIndex: 2 });
+    //if (this.navCtrl.parent.getActiveChildNavs())
+    //this.navCtrl.push('ShoppingCartPage');
   }
 
   onShowAdminOptions() {

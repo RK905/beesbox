@@ -6,7 +6,7 @@
         icon-only
         menuToggle 
         large>
-        <ion-icon large name="happy"></ion-icon>
+        <ion-icon large name="menu"></ion-icon>
       </button>
     </ion-buttons>
   
@@ -15,7 +15,7 @@
       {{ (appUser$ === null || (appUser$ !== null && currentPage !== 'HomePage')) ? 'My Beesbox' : appUser$.name }}
     </ion-label>
   
-    <!--<ion-buttons right>
+    <ion-buttons right>
       <button 
         padding-right
         ion-button 
@@ -23,8 +23,8 @@
         clear
         (click)="onShowCart()">
         <ion-icon name="cart"></ion-icon>
-        <ion-badge item-end>0</ion-badge>
+        <ion-badge item-end *ngIf="cart.length > 0">{{ cart.length }}</ion-badge>
       </button>
-    </ion-buttons>-->
+    </ion-buttons>
   
   </ion-navbar>

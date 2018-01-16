@@ -1,8 +1,11 @@
-<ion-tabs (ionChange)="onPageChange($event)">
+<ion-tabs [selectedIndex]="selectedIndex" (ionChange)="onPageChange($event)">
   <ion-tab 
     *ngFor="let tab of tabList; let i = index"
     [root]="tab.rootPage" 
     [tabTitle]="tab.title" 
     [tabIcon]="tab.icon">
+    <ion-badge *ngIf="tab.title === cart.length > 0">
+      {{ cart.length }}
+    </ion-badge>
   </ion-tab>  
-</ion-tabs>>
+</ion-tabs>

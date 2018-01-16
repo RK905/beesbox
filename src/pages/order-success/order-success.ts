@@ -1,5 +1,11 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, OnInit }   from '@angular/core';
+
+import { IonicPage, 
+         NavController, 
+         NavParams }   from 'ionic-angular';
+
+import { AuthService } from '../../app/shared/services/auth.service';         
+import { AppUser }     from '../../app/shared/models/app-user.model';
 
 
 @IonicPage()
@@ -7,9 +13,20 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   selector: 'page-order-success',
   templateUrl: 'order-success.html',
 })
-export class OrderSuccessPage {
+export class OrderSuccessPage implements OnInit {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  appUser$: AppUser;
+
+  constructor(public navCtrl: NavController, 
+              public navParams: NavParams,
+              private authService: AuthService) {
+  }
+
+  ngOnInit() {
+    this.authService.appUser$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = user;
+    });
   }
 
   ionViewDidLoad() {

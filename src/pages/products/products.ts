@@ -1,14 +1,20 @@
-import { Component, OnInit }  from '@angular/core';
+import { Component, 
+        OnInit, 
+        OnDestroy }            from '@angular/core';
 
 import { IonicPage, 
          NavController, 
-         NavParams }          from 'ionic-angular';
+         NavParams }           from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
-import {ToolbarAnimation }    from '../../animations/toolbar.animation';
-import { AuthService }        from '../../app/shared/services/auth.service';
-import { HelperService }      from '../../app/shared/services/helper.service';
-import { WooCommerceService }      from '../../app/shared/services/woocommerce.service';
-import { AppUser } from '../../app/shared/models/app-user.model';
+import {ToolbarAnimation }     from '../../animations/toolbar.animation';
+import { AuthService }         from '../../app/shared/services/auth.service';
+import { HelperService }       from '../../app/shared/services/helper.service';
+import { WooCommerceService }  from '../../app/shared/services/woocommerce.service';
+import { AppUser }             from '../../app/shared/models/app-user.model';
+import { Product }             from '../../app/shared/models/product.model';
+import { ShoppingCartService } from '../../app/shared/services/shopping-cart.service';
+import { Item }                from '../../app/shared/models/item.model';
 
 
 @IonicPage()
@@ -19,113 +25,52 @@ import { AppUser } from '../../app/shared/models/app-user.model';
     ToolbarAnimation
   ]
 })
-export class ProductsPage implements OnInit {
+export class ProductsPage implements OnInit, OnDestroy {
 
-  wooCom: any;
-  appUser$: any;
-  selectedView: string = 'list';
+  appUser$: AppUser;
+  cart: Item[];
+  selectedView$: string;
+  curSize$: number;
+  productList: Product[];
+  
 
-  isXs: boolean;
-  isSm: boolean;
-  isLg: boolean;
+  constructor(public navCtrl: NavController, 
+              public navParams: NavParams,
+              private wooService: WooCommerceService,
+              private authService: AuthService, 
+              private helperService: HelperService,
+              private cartService: ShoppingCartService,
+              public storage: Storage) {
 
-  productList$: any;
-  sampleProducts: any[] = [
-    {
-      title: 'Item 1',
-      desc: 'This is item 1',
-      img: 'book',
-      price: '5.00'
-    }, {
-      title: 'Item 2',
-      desc: 'This is item 2',
-      img: 'book',
-      price: '10.00'
-    }, {
-      title: 'Item 3',
-      desc: 'This is item 3',
-      img: 'book',
-      price: '7.00'
-    }, {
-      title: 'Item 4',
-      desc: 'This is item 4',
-      img: 'book',
-      price: '17.00'
-    }, {
-      title: 'Item 5',
-      desc: 'This is item 5',
-      img: 'book',
-      price: '99.00'
-    }
-  ];
+    this.storage.get('cart').then((data: Item[]) => {
+      this.cart = (data.length || data != null) ? data.slice() : [];
+    }); 
+  }
 
-  constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams,
-    private wooService: WooCommerceService,
-    private authService: AuthService, 
-    public helperService: HelperService) {
+  async ngOnInit() {
+    this.authService.appUser$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = user;
+    });
 
-      this.authService.user$.subscribe((user) => {
-        if (!user) return;
-        this.appUser$ = this.authService.appUser$;
-        console.log('curUser = ' + this.appUser$.name);
-      });
+    this.helperService.selectedView.subscribe((view) => this.selectedView$ = view);
+    this.helperService.gridSize.subscribe((size) => this.curSize$ = size);
 
-      this.wooCom = this.wooService.init();
-
-      this.wooCom.getAsync('products').then((products) => {
-        this.productList$ = JSON.parse(products.toJSON().body);
-        console.log(...this.productList$);
-      }).catch((error) => {
-        console.log(error);
-      });
-
-      this.isSm = true;
-      this.isLg = false;
-      this.isXs = false;
+    this.productList = await this.wooService.getProducts();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductsPage');
-    
-    
   }
 
-  showProductDetails(product) {
-    this.navCtrl.push('ProductDetailsPage', { product: product });
+  async getAllProducts() {
+    this.productList = await this.wooService.getProducts();
+}
+
+  showProductDetails(p: Product) {
+    this.navCtrl.push('ProductDetailsPage', { product: p });
   }
 
-  onReduceGrid() {
-
-    if (this.isXs) return;
-    else if (this.isSm) {
-      this.isSm = !this.isSm;
-      this.isXs = !this.isXs;
-    }
-    else {//this.isLg
-      this.isLg = !this.isLg;
-      this.isSm = !this.isSm;
-    }
+  ngOnDestroy() {
   }
-
-  onIncreaseGrid() {
-    if (this.isLg) return;
-    else if (this.isSm) {
-      this.isSm = !this.isSm;
-      this.isLg = !this.isLg;
-    }
-    else { //this.isXs
-      this.isXs = !this.isXs;
-      this.isSm = !this.isSm
-    }
-  }
-
-
-  ngOnInit() {
-    
-
-    
-  }
-
 }

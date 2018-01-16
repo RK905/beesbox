@@ -1,4 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, 
+         ViewChild, 
+         OnInit }               from '@angular/core';
 
 import { IonicPage, 
          Nav,
@@ -10,8 +12,8 @@ import { IonicPage,
 
 import { AuthService }          from '../../app/shared/services/auth.service';
 import { HelperService }        from '../../app/shared/services/helper.service';
-import { UserService }          from '../../app/shared/services/user.service';
 import { WooCommerceService }   from '../../app/shared/services/woocommerce.service';
+import { AppUser }              from '../../app/shared/models/app-user.model';
 
 
 @IonicPage()
@@ -19,43 +21,44 @@ import { WooCommerceService }   from '../../app/shared/services/woocommerce.serv
   selector: 'page-menu',
   templateUrl: 'menu.html',
 })
-export class MenuPage {
+export class MenuPage implements OnInit {
 
   @ViewChild(Nav) nav: Nav;
   menuRoot: string = 'TabsPage';
   loginPage: string = 'LoginPage';
-  appUser$: any;
-  wooCom: any;
-  catList$: any;
+
+  curPage$: string;
+  appUser$: AppUser;
+  catList: any;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              public alertCtrl: AlertController,
-              public loadingCtrl: LoadingController,
-              public toastCtrl: ToastController,
-              public authService: AuthService,
-              public helperService: HelperService,
-              public userService: UserService,
-              private wooService: WooCommerceService) {
+              private alertCtrl: AlertController,
+              private loadingCtrl: LoadingController,
+              private toastCtrl: ToastController,
+              private authService: AuthService,
+              private helperService: HelperService,
+              private wooService: WooCommerceService) { 
+  }
 
-    this.authService.user$.subscribe( user => {
+  async ngOnInit() {
+    this.authService.appUser$.subscribe((user) => {
       if (!user) return;
-      this.appUser$ = this.userService.getUser(user.uid);
+      this.appUser$ = user;
     });
-    this.wooCom = this.wooService.init();
-    
+
+    this.helperService.curPage.subscribe((page) => this.curPage$ = page);
+    this.getCategories();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MenuPage');
 
-    this.wooCom.getAsync('products/categories').then((categories) => {
-      console.log(JSON.parse(categories.body).produc_categories);
-      this.catList$ = JSON.parse(categories.toJSON().body);
-      console.log(...this.catList$);
-    }).catch((error) => {
-      console.log(error);
-    });
+    
+  }
+
+  async getCategories() {
+    this. catList = await this.wooService.getAllCategories();
   }
 
   setRoot(page: string) {
@@ -102,16 +105,8 @@ export class MenuPage {
   }
 
   navHome() {
-    if (this.menuRoot === 'TabsPage') {
-      let myRoot = this.nav.getActiveChildNavs()[0];
-
-      if (this.nav.getActive().name !== 'FeaturedPage') {
-        myRoot.select(0);
-      }
-    } else {
-      this.nav.setRoot('TabsPage');
-    }
-    //console.log(this.nav.getActiveChildNavs()[0].getSelected().root);
+    if (this.menuRoot === 'TabsPage') return;
+    this.nav.setRoot('TabsPage', { selectedIndex: 0 });
     
     
   }

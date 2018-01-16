@@ -1,44 +1,86 @@
-import { Component } from '@angular/core';
-import { NgForm }    from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { NgForm }            from '@angular/forms';
 
 import { IonicPage, 
          NavController, 
          NavParams, 
          LoadingController, 
-         ToastController } from 'ionic-angular';
+         ToastController }   from 'ionic-angular';
 
-import { AuthService }     from '../../app/shared/services/auth.service';
-import { Observable }      from 'rxjs/Observable';
+import { AuthService }       from '../../app/shared/services/auth.service';
+import { AppUser }           from '../../app/shared/models/app-user.model';
 
-import * as firebase       from 'firebase';
-import { User }            from '../../models/user.model';
+import { Observable }        from 'rxjs/Observable';
+
 
 @IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
 
-  appUser$: any;
+  appUser$: AppUser;
   status: string = 'signin';
+  returnPage: string;
 
-  constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams, 
-    public loadingCtrl: LoadingController,
-    public toastCtrl: ToastController,
-    private authService: AuthService) {
-      
-      this.authService.user$.subscribe((user) => {
-        if (!user) return;
-        this.appUser$ = this.authService.appUser$;
-        console.log('user = ' + this.appUser$.name);
-      })
+  constructor(public navCtrl: NavController, 
+              public navParams: NavParams, 
+              private loadingCtrl: LoadingController,
+              private toastCtrl: ToastController,
+              private authService: AuthService) {
+    this.returnPage = (this.navParams.data) ? this.navParams.data.returnPage : null;
+  }
+
+  ngOnInit() {
+    this.authService.appUser$.subscribe((user) => {
+      if (!user) return;
+      this.appUser$ = user;
+    });
+  }
+
+  ionViewCanEnter(): boolean {
+    return (!this.appUser$) ? true : false;
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LoginPage');
+    
+  }
+
+  doLoginEmail(form: NgForm) {
+    let loader = this.loadingCtrl.create({
+      content: 'Logging in'
+    });
+
+    loader.present();
+
+    loader.onDidDismiss((data) => {
+      console.log(data); 
+
+      const successMsg: string = 'Success: Logged in as ';
+      const errMsg: string = 'Error: Login failed ';
+
+      if (this.appUser$ != null || this.appUser$ != undefined) {
+        this.handleToast(successMsg + this.appUser$.name);
+        this.handleLoginRedirect(this.returnPage);
+      } else {
+        this.handleToast(errMsg + data.message);
+      }
+    });
+
+    const email: string = form.value.lEmail;
+    const password: string = form.value.lPassword;
+
+    this.authService.loginEmail(email, password)
+      .then((data) => {
+        //console.log(data);
+        loader.dismiss(data);
+      })
+      .catch((error) => {
+        console.log(error.message);
+        loader.dismiss(error);
+      });
     
   }
 
@@ -51,32 +93,30 @@ export class LoginPage {
     loader.present();
 
     loader.onDidDismiss((data) => {
-      if (data && data.user) {
-        let successMsg: string = 'Success: Logged in as ' + this.appUser$.name;
-        //console.log(data.user.displayName);
-        /*console.log('a ' + this.appUser$.name);
-        let successMsg: string = 'Success: Logged in as ' + this.appUser$.name;*/
-        this.handleToast(successMsg);
+      console.log(data); 
+      const successMsg: string = 'Success: Logged in as ';
+      const errMsg: string = 'Error: Login failed ';
+      if (this.appUser$ != null || this.appUser$ != undefined) {
+        this.handleToast(successMsg + this.appUser$.name);
+        this.handleLoginRedirect(this.returnPage);
       } else {
-        let errMsg: string = 'Error: Login failed';
-        this.handleToast(errMsg);
+        this.handleToast(errMsg + data.message);
       }
     });
 
     /** EMAIL LOGIN */
     if (method === 'email' && form.valid) {
-      const email: string = form.value.email;
-      const password: string = form.value.password;
+      const email: string = form.value.lEmail;
+      const password: string = form.value.lPassword;
 
       this.authService.loginEmail(email, password)
         .then((data) => {
           //console.log(data);
           loader.dismiss(data);
-          this.navCtrl.setRoot('TabsPage');
         })
         .catch((error) => {
           console.log(error.message);
-          loader.dismiss();
+          loader.dismiss(error);
         });
     }
     /** GOOGLE LOGIN */
@@ -85,11 +125,10 @@ export class LoginPage {
         .then((data) => {
           //console.log(data);
           loader.dismiss(data);
-          this.navCtrl.setRoot('TabsPage');
         })
         .catch((error) => {
           console.log(error.message);
-          loader.dismiss();
+          loader.dismiss(error);
         });
       }
   }
@@ -101,41 +140,25 @@ export class LoginPage {
 
     loader.present();
 
-    loader.onDidDismiss(() => {
-      /*if (this.authService.user$) {
-        console.log('a ' + this.authService.user$);
-        //let userMap = this.authService.curUser.map((user) => {
-
-        //})
-        let successMsg: string = 'Success: Logged in as ' + this.authService.user$;
-        this.handleToast(successMsg);
+    loader.onDidDismiss((data) => {
+      const successMsg: string = 'Success: Reigstered as ';
+      const errMsg: string = 'Error: Registration failed ';
+      if(this.appUser$ && this.appUser$.name) {
+        this.handleToast(successMsg + this.appUser$.name);
+        this.handleLoginRedirect(this.returnPage);
       } else {
-        let errMsg: string = 'Error: Login failed';
-        this.handleToast(errMsg);
-      }*/
+        this.handleToast(errMsg + data.message);
+      }
     });
 
-
-    /*this.authService.registerEmail(form.value.email, form.value.password)
-      .then((data) => {
-        //console.log(data)
-        this.authService.signinEmail(form.value.email, form.value.password)
-          .then((d) => {
-            loader.dismiss();
-            this.navCtrl.setRoot('TabsPage');
-          })
-          .catch((err) => {
-            console.log(err.message);
-            loader.dismiss();
-          });
-      })
-      .catch((error) => {
-        console.log(error.message);
-        loader.dismiss();
-      });*/
+    this.authService.register(form.value.rEmail, form.value.rPassword).then((data) => {
+      loader.dismiss(data);
+    }).catch((error) => {
+      loader.dismiss(error.message);
+      console.log(error.message);
+    });
+    
   }
-
-
 
   private handleToast(msg: string) {
     this.toastCtrl.create({
@@ -143,5 +166,35 @@ export class LoginPage {
       position: 'middle',
       duration: 500
     }).present();
+  }
+
+  private handleLoginRedirect(page: string) {
+    let tabs: string[] = [
+      'FeaturedPage',
+      'ProductsPage',
+      'ShoppingCartPage',
+      'HomePage'
+    ];
+    if (page == null || page == undefined || page == '') {
+      this.navCtrl.setRoot('TabsPage', { selectedIndex: 0 });
+    }
+    
+    if (tabs.indexOf(page) !== -1) {
+      for (let page of tabs) {
+        if (page === page) {
+          this.navCtrl.setRoot('TabsPage', {selectedIndex: tabs.indexOf(page) });
+        }
+      }
+    }
+    else if (page === 'CheckoutPage') {
+      this.navCtrl.setRoot('TabsPage', { selectedIndex: 2 }).then(() => {
+        this.navCtrl.push(page);
+      }).catch((error) => console.log(error));
+    }
+    else {
+      this.navCtrl.setRoot('TabsPage', { selectedIndex: 2 });
+    }
+    
+    
   }
 }

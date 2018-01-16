@@ -46,34 +46,34 @@
 
 
 <ion-content padding [ngSwitch]="status">
-  <form *ngSwitchCase="'signin'" #login="ngForm" (ngSubmit)="doLogin('email', login)">
+  <form *ngSwitchCase="'signin'" #login="ngForm" (ngSubmit)="doLoginEmail(login)">
     <ion-list>
       <ion-item>
         <ion-label floating>
           Email
         </ion-label>
         <ion-input 
-          #email
+          #lEmail
           type="email" 
-          id="email"
-          name="email"
+          id="lEmail"
+          name="lEmail"
           ngModel
           required></ion-input>
-          <p *ngIf="email.touched && !email.valid"></p>
+          <p *ngIf="lEmail.touched && !lEmail.valid"></p>
       </ion-item>
       <ion-item>
         <ion-label floating>
           Password
         </ion-label>
         <ion-input 
-          #password
+          #lPassword
           type="password" 
-          id="password"
-          name="password"
+          id="lPassword"
+          name="lPassword"
           ngModel
           min="6"
           required></ion-input>
-        <p *ngIf="password.touched && !password.valid"></p>
+        <p *ngIf="lPassword.touched && !lPassword.valid"></p>
       </ion-item>
       <ion-item>
         <button ion-button large block full [disabled]="!login.valid" type="submit">
@@ -85,34 +85,34 @@
   </form>
 
 
-  <form *ngSwitchCase="'signup'" #register="ngForm" (ngSubmit)="doRegister('email', register)">
+  <form *ngSwitchCase="'signup'" #register="ngForm" (ngSubmit)="doRegister(register)">
       <ion-list>
         <ion-item>
           <ion-label floating>
             Email
           </ion-label>
           <ion-input 
-            #email
+            #rEmail
             type="email" 
-            id="email"
-            name="email"
+            id="rEmail"
+            name="rEmail"
             ngModel
             required></ion-input>
-            <p *ngIf="email.touched && !email.valid"></p>
+            <p *ngIf="rEmail.touched && !rEmail.valid">Please enter a valid email</p>
         </ion-item>
         <ion-item>
           <ion-label floating>
             Password
           </ion-label>
           <ion-input 
-            #password
+            #rPassword
             type="password" 
-            id="password"
-            name="password"
+            id="rPassword"
+            name="rPassword"
             ngModel
             min="6"
             required></ion-input>
-          <p *ngIf="password.touched && !password.valid"></p>
+          <p *ngIf="rPassword.touched && !rPassword.valid">Please enter a valid password</p>
         </ion-item>
         <ion-item>
           <ion-label floating>
@@ -120,13 +120,14 @@
           </ion-label>
           <ion-input 
             #confirm
-            type="confirm" 
+            type="password" 
             id="confirm"
             name="confirm"
             ngModel
             min="6"
             required></ion-input>
-          <p *ngIf="confirm.touched && !confirm.valid"></p>
+          <p *ngIf="confirm.touched && !confirm.valid">Please re-enter a valid password</p>
+          <p *ngIf="confirm.value === rPassword.value">password and confirmation do not match</p>
         </ion-item>
         <ion-item>
           <button ion-button large block full [disabled]="!register.valid" type="submit">

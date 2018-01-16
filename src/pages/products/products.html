@@ -2,137 +2,37 @@
 
   <nav-bar></nav-bar>
 
-  <!--SEARCHBAR-->
-  <ion-toolbar no-padding no-border color="bees">
-
-    <ion-searchbar
-      placeholder="Search"
-      [showCancelButton]="false"
-      [(ngModel)]="myQuery" 
-      (ionInput)="onModifySearch()"
-      (ionCancel)="onCancelSearch()">
-    </ion-searchbar> 
+  <search-toolbar></search-toolbar>
   
-  </ion-toolbar>
-      
-  <!-- LIST-VIEW / GRID-VIEW -->
-  <ion-toolbar no-border ion-row align-items-center>
-
-    <ion-buttons 
-      *ngIf="selectedView === 'grid'"
-      ion-col 
-      align-self-center 
-      left>
-      <button 
-        ion-button 
-        icon-only 
-        [disabled]="isXs" 
-        (click)="onReduceGrid()">
-        <ion-icon name="remove"></ion-icon>
-      </button>
-    </ion-buttons>
-    <ion-segment 
-      [(ngModel)]="selectedView" 
-      ion-col
-      align-self-center
-      no-border>
-  
-        <ion-segment-button value="list">
-          <ion-icon name="list"></ion-icon>
-        </ion-segment-button>  
-  
-        <ion-segment-button value="grid">
-          <ion-icon name="grid"></ion-icon>
-        </ion-segment-button>
-  
-      </ion-segment>
-      <ion-buttons 
-        *ngIf="selectedView === 'grid'"
-        ion-col 
-        align-self-center 
-        right>
-        <button 
-          ion-button 
-          icon-only 
-          [disabled]="isLg"
-          (click)="onIncreaseGrid()">
-          <ion-icon name="add"></ion-icon>
-        </button>
-      </ion-buttons>
-  
-  </ion-toolbar>
 </ion-header>
 
 
 <ion-content #content>
-  <ng-container [ngSwitch]="selectedView">
+
+  
+  <!--<product-component [shopping-cart]="cart"></product-component>-->
+  
+  <ng-container [ngSwitch]="selectedView$">
     
-      
       <ion-list *ngSwitchCase="'list'">
-        <button 
-          ion-item 
-          *ngFor="let prod of productList$ | async"
-          (click)="showProductDetails(prod)">
-          <ion-thumbnail item-left>
-              <img [src]="prod.images[0].src" [alt]="prod.name" />
-          </ion-thumbnail>
-          <h2>{{ prod.name }}</h2>
-          <h3 [innerHTML]="prod.short_description"></h3>
-          <p [innerHTML]="prod.price | currency:'USD':true"></p>
-        </button>
+        <ng-container *ngFor="let prod of productList">
 
+            <product-list [product]="prod"></product-list>
 
-
-
-        <!-- SAMPLE ITEM LIST -->
-        <!--<button ion-item *ngFor="let prod of sampleProducts" details-none>
-          <ion-icon item-left [name]="prod.img"></ion-icon>
-          <h2>{{ prod.title }}</h2>
-          <p>{{ prod.desc }}</p>
-          <ion-note>
-            {{ prod.price }}
-          </ion-note>
-        </button>-->
+        </ng-container>
       </ion-list>
-
-
 
       <ion-grid *ngSwitchCase="'grid'" no-padding>
           <ion-row no-padding>
-
             <ion-col 
-              [attr.col-6]="isSm ? true : null"
-              [attr.col-auto]="isXs ? true : null"
-              [attr.col-4]="isLg ? true : null" 
-              no-padding 
-              *ngFor="let prod of productList$">
-              <ion-card (click)="showProductDetails(prod)">
-                <ion-card-header text-center>
-                  {{ prod.name }}
-                </ion-card-header>
-    
-                <ion-card-content text-center>
-                    <ion-thumbnail>
-                      <img [src]="prod.images[0].src" />
-                      <ion-label [innerHTML]="prod.price | currency:'USD':true"></ion-label>
-                    </ion-thumbnail>
-                </ion-card-content>
-                </ion-card>
-            </ion-col>
+              [attr.col-6]="curSize$ === 1 ? true : null"
+              [attr.col-auto]="curSize$ === 2 ? true : null"
+              [attr.col-4]="curSize$ === 0 ? true : null" 
+              *ngFor="let prod of productList">
 
-            <!-- SAMPLE GRID -->
-            <!--<ion-col col-6 *ngFor="let prod of sampleProducts">
-              <ion-card>
-                <ion-card-header text-center>
-                  {{ prod.title }}
-                </ion-card-header>
-    
-                <ion-card-content text-center>
-                    <ion-icon [name]="prod.img"></ion-icon>
-                </ion-card-content>
-              </ion-card>
-              
-            </ion-col>-->
+              <product-grid [product]="prod"></product-grid>
+
+          </ion-col>
           </ion-row>
         </ion-grid>
 

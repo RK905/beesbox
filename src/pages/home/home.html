@@ -12,7 +12,7 @@
     *ngIf="appUser$ !== null"
     full 
     block 
-    [navPush]="ordersPage">
+    [navPush]="'MyOrderPage'">
     <ion-icon name="pricetags" item-left></ion-icon>View my orders
   </button>
 
@@ -21,7 +21,7 @@
     block 
     full 
     *ngIf="appUser$ !== null && newSettings == null"
-    (click)="onShowQuizPage()">
+    navPush="'QuizPage'">
     <ion-icon item-left name="person"></ion-icon>
     Begin Personalized Quiz
   </button>

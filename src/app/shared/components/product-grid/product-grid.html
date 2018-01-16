@@ -1,0 +1,25 @@
+<ion-card *ngIf="product.name">
+    <img [src]="product.images[0].src" />
+    <ion-card-content text-center>
+        <ion-card-title>
+            {{ product.name }}
+        </ion-card-title>
+            
+        <ion-label [innerHTML]="product.price | currency:'USD':'symbol'"></ion-label>
+        <p [innerHTML]="product.short_description"></p>
+    </ion-card-content>
+
+    <ion-row>
+        <ion-col>
+            <button 
+                *ngIf="getQuantity() === 0"
+                ion-button 
+                block 
+                full 
+                (click)="addToCart(product)">
+                <ion-icon name="add" item-left></ion-icon>
+                Add To Cart
+            </button>
+        </ion-col>
+    </ion-row>
+</ion-card>

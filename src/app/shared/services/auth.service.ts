@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable }      from '@angular/core';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { UserService } from './user.service';
-import { AppUser } from '../models/app-user.model';
 
-import { Observable } from 'rxjs/Observable';
+import { UserService }     from './user.service';
+import { AppUser }         from '../models/app-user.model';
+
+import { Observable }      from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/of';
 
@@ -16,7 +17,8 @@ export class AuthService {
 
     user$: Observable<firebase.User>;
 
-    constructor(private userService: UserService, private afAuth: AngularFireAuth) {
+    constructor(private userService: UserService, 
+                private afAuth: AngularFireAuth) {
         this.user$ = afAuth.authState;
     }
 

@@ -1,7 +1,9 @@
 <ion-menu [content]="content">
   <ion-content>
       <ion-list>
-        <ion-list-header>{{ (appUser$ && appUser$.name) ? appUser$.name : 'Menu' }}</ion-list-header>
+        <ion-list-header>
+            {{ appUser$?.name || 'Menu' }}
+        </ion-list-header>
 
         <button 
             menuClose 
@@ -23,7 +25,7 @@
         </ng-container>
         
         <ion-item-divider>Categories</ion-item-divider>
-        <button ion-item *ngFor="let cat of catList$">
+        <button ion-item *ngFor="let cat of catList">
             <ion-icon item-left name="baseball"></ion-icon>
             {{ cat.name }}
         </button>
