@@ -1,40 +1,35 @@
-import { Component, Input } from '@angular/core';
+import { Component, 
+        Input, 
+        OnInit } from '@angular/core';
 
 import { NavController }    from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
-import { ShoppingCartService } from '../../services/shopping-cart.service';
+//import { ShoppingCartService } from '../../services/shopping-cart.service';
 import { Product }          from '../../models/product.model';
 
 import { Item } from '../../models/item.model';
+import { Cart } from '../../models/cart.model';
 
 
 @Component({
     selector: 'product-list',
     templateUrl: 'product-list.html'
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
 
     @Input() 
     product: Product;
     
-    cart: Item[];
+    cart: Cart;
 
     constructor(public navCtrl: NavController, 
-                private cartService: ShoppingCartService,
+                //private cartService: ShoppingCartService,
                 public storage: Storage) {
-        this.storage.get('cart').then((data: Item[]) => {
-            this.cart = (data.length || data != null) ? data.slice() : [];
-        }); 
     }
 
-    getQuantity() {
-        if (!this.cart) return 0;
-        else {
-            for (let i of this.cart) {
-                return (i.product.id === this.product.id) ? i.quantity : 0;
-            }
-        }
+    ngOnInit() {
+        //this.cartService.getCart().then((cart: Cart) => this.cart = cart);
     }
 
     showProductDetails() {

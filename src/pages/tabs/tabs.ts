@@ -7,12 +7,14 @@ import { IonicPage,
          NavParams }           from 'ionic-angular';
 import { Storage }             from '@ionic/storage';
 
-import { AuthService }         from '../../app/shared/services/auth.service';
+import { UserAuthService }     from '../../app/shared/services/user-auth.service';
 import { HelperService }       from '../../app/shared/services/helper.service';
-import { ShoppingCartService } from '../../app/shared/services/shopping-cart.service';
+//import { ShoppingCartService } from '../../app/shared/services/shopping-cart.service';
 import { AppUser }             from '../../app/shared/models/app-user.model';
+import { Cart }                from '../../app/shared/models/cart.model';
 import { Item }                from '../../app/shared/models/item.model';
 
+import * as firebase from 'firebase';
 
 export interface Page {
   rootPage: string;
@@ -28,10 +30,9 @@ export interface Page {
 })
 export class TabsPage implements OnInit, OnDestroy {
 
-  appUser$: AppUser;
-  cart: Item[] = [];
+  appUser: AppUser;
+  cart: Cart;
   selectedIndex: number = 0;
-  cartCount: number = 0;
   tabList: Page[] = [
     {
       rootPage: 'FeaturedPage',
@@ -54,25 +55,27 @@ export class TabsPage implements OnInit, OnDestroy {
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams, 
-              private authService: AuthService,
+              private authService: UserAuthService,
               private helperService: HelperService,
-              private cartService: ShoppingCartService,
+              //private cartService: ShoppingCartService,
               public storage: Storage) {
-    this.storage.get('cart').then((data: Item[]) => {
-      this.cart = (data.length || data != null) ? data.slice() : [];
-    });
+                
     //this.cart = this.cartService.getCart();
     //this.cartCount = this.cart.length || 0;
   }
 
   async ngOnInit() {
+    this.authService.appUser$.subscribe((appUser: AppUser) => {
+      this.appUser = appUser;
+    });
     if (this.navParams.data) {
       this.selectedIndex = this.navParams.data.selectedIndex;
     }
-    this.authService.appUser$.subscribe((user) => {
-      if (!user) return;
-      this.appUser$ = user;
-    });
+
+    console.log(this.appUser);
+
+
+    //this.cartService.getCart().then((cart: Cart) => this.cart = cart);
     
     
 

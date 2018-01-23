@@ -1,16 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm }            from '@angular/forms';
 
-import { IonicPage, 
+import { App,
+         IonicPage, 
          NavController, 
          NavParams, 
          LoadingController, 
          ToastController }   from 'ionic-angular';
 
-import { AuthService }       from '../../app/shared/services/auth.service';
+import { UserAuthService }   from '../../app/shared/services/user-auth.service';
 import { AppUser }           from '../../app/shared/models/app-user.model';
 
 import { Observable }        from 'rxjs/Observable';
+import { LoginResponse }     from '../../app/shared/models/login-response.model';
+
+import * as firebase from 'firebase';
+import { DataService } from '../../app/shared/services/data.service';
 
 
 @IonicPage()
@@ -20,27 +25,47 @@ import { Observable }        from 'rxjs/Observable';
 })
 export class LoginPage implements OnInit {
 
-  appUser$: AppUser;
+  user: firebase.User;
+  appUser: AppUser;
   status: string = 'signin';
   returnPage: string;
+
+  logEmail: string;
+  logPass: string;
+
+  regEmail: string;
+  regPass: string;
+  regConfirm: string;
+
+  socials: Array<{ name: string, icon: string }> = [
+    { 
+      name: 'google',
+      icon: 'logo-google'
+    }, {
+      name: 'facebook',
+      icon: 'logo-facebook'
+    }, {
+      name: 'twitter',
+      icon: 'logo-twitter'
+    }
+  ];
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams, 
               private loadingCtrl: LoadingController,
               private toastCtrl: ToastController,
-              private authService: AuthService) {
+              private authService: UserAuthService,
+              private dataService: DataService) {
     this.returnPage = (this.navParams.data) ? this.navParams.data.returnPage : null;
+    
   }
 
   ngOnInit() {
-    this.authService.appUser$.subscribe((user) => {
-      if (!user) return;
-      this.appUser$ = user;
-    });
-  }
+    this.authService.getAuthenticatedUser()
+      .subscribe((user: firebase.User) => this.user = user);
 
-  ionViewCanEnter(): boolean {
-    return (!this.appUser$) ? true : false;
+    console.log((this.returnPage) ? this.returnPage : '');
+
   }
 
   ionViewDidLoad() {
@@ -48,117 +73,71 @@ export class LoginPage implements OnInit {
     
   }
 
-  doLoginEmail(form: NgForm) {
-    let loader = this.loadingCtrl.create({
-      content: 'Logging in'
+  async login() {
+
+    let loader = this.loadingCtrl.create({ content: 'Logging in' });
+
+    loader.onDidDismiss((response: LoginResponse) => {
+      if (!response.error) {
+        this.dataService.saveAppUser(this.user);
+        this.handleToast(`logged in via ${response.result.email}`);
+        this.navCtrl.setRoot('MenuPage');
+      }
+      else this.handleToast(`error ${response.error.message}`);
     });
 
     loader.present();
 
-    loader.onDidDismiss((data) => {
-      console.log(data); 
-
-      const successMsg: string = 'Success: Logged in as ';
-      const errMsg: string = 'Error: Login failed ';
-
-      if (this.appUser$ != null || this.appUser$ != undefined) {
-        this.handleToast(successMsg + this.appUser$.name);
-        this.handleLoginRedirect(this.returnPage);
-      } else {
-        this.handleToast(errMsg + data.message);
-      }
-    });
-
-    const email: string = form.value.lEmail;
-    const password: string = form.value.lPassword;
-
-    this.authService.loginEmail(email, password)
-      .then((data) => {
-        //console.log(data);
-        loader.dismiss(data);
-      })
-      .catch((error) => {
-        console.log(error.message);
-        loader.dismiss(error);
-      });
-    
-  }
-
-  doLogin(method: string, form?: NgForm) {
-    
-    let loader = this.loadingCtrl.create({
-      content: 'Logging in'
-    });
-
-    loader.present();
-
-    loader.onDidDismiss((data) => {
-      console.log(data); 
-      const successMsg: string = 'Success: Logged in as ';
-      const errMsg: string = 'Error: Login failed ';
-      if (this.appUser$ != null || this.appUser$ != undefined) {
-        this.handleToast(successMsg + this.appUser$.name);
-        this.handleLoginRedirect(this.returnPage);
-      } else {
-        this.handleToast(errMsg + data.message);
-      }
-    });
-
-    /** EMAIL LOGIN */
-    if (method === 'email' && form.valid) {
-      const email: string = form.value.lEmail;
-      const password: string = form.value.lPassword;
-
-      this.authService.loginEmail(email, password)
-        .then((data) => {
-          //console.log(data);
-          loader.dismiss(data);
-        })
-        .catch((error) => {
-          console.log(error.message);
-          loader.dismiss(error);
-        });
+    if (this.formIsValid()) {
+        let res: LoginResponse = await this.authService.loginEmail(this.logEmail, this.logPass);
+        loader.dismiss(res);
     }
-    /** GOOGLE LOGIN */
-    else if (method === 'google') {
-      this.authService.loginGoogle()
-        .then((data) => {
-          //console.log(data);
-          loader.dismiss(data);
-        })
-        .catch((error) => {
-          console.log(error.message);
-          loader.dismiss(error);
-        });
-      }
   }
 
-  doRegister(form: NgForm) {
-    let loader = this.loadingCtrl.create({
-      content: 'Logging in'
+
+
+
+  async doLogin(method: string) {
+
+    let loader = this.loadingCtrl.create({ content: 'Logging in' });
+
+    loader.onDidDismiss((response) => {
+      if (!response.message) {
+        this.dataService.saveAppUser(this.user);
+        this.handleToast(`logged in via ${method} as ${response.result.email}`);
+        this.navCtrl.setRoot('MenuPage');
+      }
+      else this.handleToast(`error ${response.error.message}`);
     });
 
     loader.present();
 
-    loader.onDidDismiss((data) => {
-      const successMsg: string = 'Success: Reigstered as ';
-      const errMsg: string = 'Error: Registration failed ';
-      if(this.appUser$ && this.appUser$.name) {
-        this.handleToast(successMsg + this.appUser$.name);
-        this.handleLoginRedirect(this.returnPage);
-      } else {
-        this.handleToast(errMsg + data.message);
+    let res: LoginResponse = await this.authService.LoginSocial(method)
+      loader.dismiss(res);
+  }
+
+
+
+  async doRegister() {
+    let loader = this.loadingCtrl.create({ content: 'Logging in' });
+
+    loader.onDidDismiss((response: LoginResponse) => {
+      if (!response.error) {
+        this.dataService.saveAppUser(this.user);
+        console.dir(this.navCtrl.parent);
+        this.handleToast(`logged in via ${response.result.email}`);
+        this.navCtrl.setRoot('MenuPage');
       }
+      else this.handleToast(`error ${response.error.message}`);
     });
 
-    this.authService.register(form.value.rEmail, form.value.rPassword).then((data) => {
-      loader.dismiss(data);
-    }).catch((error) => {
-      loader.dismiss(error.message);
-      console.log(error.message);
-    });
-    
-  }
+    loader.present();
+
+    if (this.formIsValid) {
+      const res: LoginResponse = await this.authService.register(this.regEmail, this.regPass);
+      loader.dismiss(res);
+    }
+}
 
   private handleToast(msg: string) {
     this.toastCtrl.create({
@@ -168,33 +147,25 @@ export class LoginPage implements OnInit {
     }).present();
   }
 
-  private handleLoginRedirect(page: string) {
-    let tabs: string[] = [
-      'FeaturedPage',
-      'ProductsPage',
-      'ShoppingCartPage',
-      'HomePage'
-    ];
-    if (page == null || page == undefined || page == '') {
-      this.navCtrl.setRoot('TabsPage', { selectedIndex: 0 });
+  private formIsValid(): boolean {
+    if (this.status === 'signup') {
+      if (this.regEmail == null || this.regEmail == undefined || this.regEmail == '') return false;
+
+      if (this.regPass == null || this.regPass == undefined || this.regPass == '' || this.regPass.length < 6) return false;
+
+      if (this.regConfirm == null || this.regConfirm == undefined || this.regConfirm == '' || this.regConfirm.length < 6) return false;   
+
+      if (this.regPass !== this.regConfirm) return false;
+
+      return true;
     }
-    
-    if (tabs.indexOf(page) !== -1) {
-      for (let page of tabs) {
-        if (page === page) {
-          this.navCtrl.setRoot('TabsPage', {selectedIndex: tabs.indexOf(page) });
-        }
-      }
+
+    if (this.status === 'signin') {
+      if (this.logEmail == null || this.logEmail == undefined || this.logEmail == '') return false;
+
+      if (this.logPass == null || this.logPass == undefined || this.logPass == '' || this.logPass.length < 6) return false;
+
+      return true;
     }
-    else if (page === 'CheckoutPage') {
-      this.navCtrl.setRoot('TabsPage', { selectedIndex: 2 }).then(() => {
-        this.navCtrl.push(page);
-      }).catch((error) => console.log(error));
-    }
-    else {
-      this.navCtrl.setRoot('TabsPage', { selectedIndex: 2 });
-    }
-    
-    
   }
 }

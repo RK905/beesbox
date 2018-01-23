@@ -4,7 +4,7 @@ import { IonicPage,
          NavController, 
          NavParams }         from 'ionic-angular';
 
-import { AuthService }       from '../../app/shared/services/auth.service';
+import { UserAuthService }       from '../../app/shared/services/user-auth.service';
 import { HelperService }     from '../../app/shared/services/helper.service';
 import { AppUser }           from '../../app/shared/models/app-user.model';
 
@@ -16,7 +16,7 @@ import { AppUser }           from '../../app/shared/models/app-user.model';
 })
 export class MyOrdersPage implements OnInit {
 
-  appUser$: AppUser;
+  appUser: AppUser;
   orderList: string[] = [
     'item 1',
     'item 2'
@@ -25,7 +25,7 @@ export class MyOrdersPage implements OnInit {
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams, 
-    public authService: AuthService,
+    public authService: UserAuthService,
     public helperService: HelperService) {
   }
 
@@ -36,7 +36,7 @@ export class MyOrdersPage implements OnInit {
   ngOnInit() {
     this.authService.appUser$.subscribe((user) => {
       if (!user) return;
-      this.appUser$ = user;
+      this.appUser = user;
     });
   }
 

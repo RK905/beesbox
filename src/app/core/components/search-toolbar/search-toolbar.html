@@ -14,20 +14,20 @@
   <ion-toolbar no-border ion-row align-items-center>
 
     <ion-buttons 
-      *ngIf="selectedView$ === 'grid'"
+      *ngIf="selectedView === 'grid'"
       ion-col 
       align-self-center 
       left>
       <button 
         ion-button 
         icon-only 
-        [disabled]="curSize$ === 0" 
+        [disabled]="curSize === 0" 
         (click)="onDecreaseGrid()">
         <ion-icon name="remove"></ion-icon>
       </button>
     </ion-buttons>
     <ion-segment 
-      [(ngModel)]="selectedView$"
+      [(ngModel)]="selectedView"
       ion-col
       align-self-center
       no-border>
@@ -42,14 +42,14 @@
   
       </ion-segment>
       <ion-buttons 
-        *ngIf="selectedView$ === 'grid'"
+        *ngIf="selectedView === 'grid'"
         ion-col 
         align-self-center 
         right>
         <button 
           ion-button 
           icon-only 
-          [disabled]="curSize$ === 2"
+          [disabled]="curSize === 2"
           (click)="onIncreaseGrid()">
           <ion-icon name="add"></ion-icon>
         </button>

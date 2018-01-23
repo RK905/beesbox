@@ -11,11 +11,11 @@
     </ion-buttons>
   
   
-    <ion-label padding-left (click)="(appUser$  && appUser$.isAdmin === true) ? onShowAdminOptions() : ''">
-      {{ (appUser$ === null || (appUser$ !== null && currentPage !== 'HomePage')) ? 'My Beesbox' : appUser$.name }}
-    </ion-label>
+    <ion-title padding-left (click)="(appUser  && appUser.isAdmin === true) ? onShowAdminOptions() : ''">
+      {{ (appUser === null || (appUser !== null && currentPage !== 'HomePage')) ? 'My Beesbox' : appUser.name }}
+    </ion-title>
   
-    <ion-buttons right>
+    <ion-buttons right *ngIf="!(currentPage === 'LoginPage')">
       <button 
         padding-right
         ion-button 
@@ -23,7 +23,7 @@
         clear
         (click)="onShowCart()">
         <ion-icon name="cart"></ion-icon>
-        <ion-badge item-end *ngIf="cart.length > 0">{{ cart.length }}</ion-badge>
+        <ion-badge item-end>0</ion-badge>
       </button>
     </ion-buttons>
   

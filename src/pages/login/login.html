@@ -1,35 +1,8 @@
 <ion-header>
 
-  <nav-bar></nav-bar>
-  <!--<ion-navbar padding-vertical color="bees" hideBackButton>
-
-    <ion-buttons left>
-      <button
-        ion-button 
-        icon-only
-        menuToggle 
-        large>
-        <ion-icon large name="happy"></ion-icon>
-      </button>
-    </ion-buttons>
-    
-    
-    <ion-label padding-left>
-      My Beesbox
-    </ion-label>
-    
-    <ion-buttons right>
-      <button 
-        padding-right
-        ion-button 
-        icon-only 
-        clear
-        (click)="onShowCart()">
-        <ion-icon name="cart"></ion-icon>
-        <ion-badge item-end>0</ion-badge>
-      </button>
-    </ion-buttons>
-  </ion-navbar>-->
+  <ion-navbar padding color="bees" hideBackButton>  
+    <ion-title> My Beesbox</ion-title>
+  </ion-navbar>
 
   <ion-toolbar>
     <ion-segment [(ngModel)]="status">
@@ -46,129 +19,69 @@
 
 
 <ion-content padding [ngSwitch]="status">
-  <form *ngSwitchCase="'signin'" #login="ngForm" (ngSubmit)="doLoginEmail(login)">
-    <ion-list>
+
+  <ion-card *ngSwitchCase="'signin'">
+    <ion-card-content>
       <ion-item>
-        <ion-label floating>
-          Email
-        </ion-label>
-        <ion-input 
-          #lEmail
-          type="email" 
-          id="lEmail"
-          name="lEmail"
-          ngModel
-          required></ion-input>
-          <p *ngIf="lEmail.touched && !lEmail.valid"></p>
+        <ion-label floating>Email</ion-label>
+        <ion-input #e type="email" [(ngModel)]="logEmail" required></ion-input>
+        <p *ngIf="e.touched && !e.valid"></p>
       </ion-item>
       <ion-item>
-        <ion-label floating>
-          Password
-        </ion-label>
-        <ion-input 
-          #lPassword
-          type="password" 
-          id="lPassword"
-          name="lPassword"
-          ngModel
-          min="6"
-          required></ion-input>
-        <p *ngIf="lPassword.touched && !lPassword.valid"></p>
+        <ion-label floating>Password</ion-label>
+        <ion-input #p type="password" [(ngModel)]="logPass" min="6" required></ion-input>
+        <p *ngIf="p.touched && !p.valid"></p>
+      </ion-item>
+    </ion-card-content>
+    <ion-row justify-content-center padding>
+      <button ion-button round full (click)="login()">
+        <ion-icon item-left name="key"></ion-icon>
+        Login
+      </button>
+    </ion-row>
+  </ion-card>
+
+
+  <ion-card *ngSwitchCase="'signup'">
+    <ion-card-content>
+      <ion-item>
+        <ion-label floating>Email</ion-label>
+        <ion-input #ee type="email" [(ngModel)]="regEmail" required></ion-input>
+        <p *ngIf="ee.touched && !ee.valid">Please enter a valid email</p>
       </ion-item>
       <ion-item>
-        <button ion-button large block full [disabled]="!login.valid" type="submit">
-          <ion-icon icon-left name="key"></ion-icon>
-          Login
+        <ion-label floating>Password</ion-label>
+        <ion-input #pp type="password" [(ngModel)]="regPass" min="6" required></ion-input>
+        <p *ngIf="pp.touched && !pp.valid">Please enter a valid password</p>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Confirm Password</ion-label>
+        <ion-input #c type="password" [(ngModel)]="regConfirm" min="6" required></ion-input>
+        <p *ngIf="c.touched && !c.valid">Please re-enter a valid password</p>
+        <p *ngIf="c.value === pp.value">password and confirmation do not match</p>
+      </ion-item>
+    </ion-card-content>
+    <ion-row justify-content-center padding>
+      <button ion-button round full (click)="doRegister()">
+        <ion-icon item-left name="key"></ion-icon>
+        Register
+      </button>
+    </ion-row>
+  </ion-card>
+
+  <ion-grid>
+    <ion-row justify-content-center padding>
+
+      <ion-col *ngFor="let soc of socials">
+        <button 
+          ion-fab
+          icon-only
+          (click)="doLogin(soc.name)">
+          <ion-icon [name]="soc.icon"></ion-icon>
         </button>
-      </ion-item>
-    </ion-list>
-  </form>
+      </ion-col>
 
-
-  <form *ngSwitchCase="'signup'" #register="ngForm" (ngSubmit)="doRegister(register)">
-      <ion-list>
-        <ion-item>
-          <ion-label floating>
-            Email
-          </ion-label>
-          <ion-input 
-            #rEmail
-            type="email" 
-            id="rEmail"
-            name="rEmail"
-            ngModel
-            required></ion-input>
-            <p *ngIf="rEmail.touched && !rEmail.valid">Please enter a valid email</p>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>
-            Password
-          </ion-label>
-          <ion-input 
-            #rPassword
-            type="password" 
-            id="rPassword"
-            name="rPassword"
-            ngModel
-            min="6"
-            required></ion-input>
-          <p *ngIf="rPassword.touched && !rPassword.valid">Please enter a valid password</p>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>
-            Confirm Password
-          </ion-label>
-          <ion-input 
-            #confirm
-            type="password" 
-            id="confirm"
-            name="confirm"
-            ngModel
-            min="6"
-            required></ion-input>
-          <p *ngIf="confirm.touched && !confirm.valid">Please re-enter a valid password</p>
-          <p *ngIf="confirm.value === rPassword.value">password and confirmation do not match</p>
-        </ion-item>
-        <ion-item>
-          <button ion-button large block full [disabled]="!register.valid" type="submit">
-            <ion-icon icon-left name="key"></ion-icon>
-            Register
-          </button>
-        </ion-item>
-      </ion-list>
-    </form>
-
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <button 
-            ion-fab
-            icon-only
-            (click)="doLogin('google')">
-            <ion-icon name="logo-google"></ion-icon>
-          </button>
-        </ion-col>
-
-        <ion-col>
-          <button 
-            ion-fab
-            icon-only
-            disabled
-            (click)="doLogin('facebook')">
-            <ion-icon name="logo-facebook"></ion-icon>
-          </button>
-        </ion-col>
-
-        <ion-col>
-          <button 
-            ion-fab
-            icon-only
-            disabled
-            (click)="doLogin('twitter')">
-            <ion-icon name="logo-twitter"></ion-icon>
-          </button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    </ion-row>
+  </ion-grid>
 
 </ion-content>

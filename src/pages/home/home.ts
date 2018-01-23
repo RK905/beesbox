@@ -4,7 +4,7 @@ import { IonicPage,
          NavParams, 
          ModalController }   from 'ionic-angular';
 
-import { AuthService }       from '../../app/shared/services/auth.service';
+import { UserAuthService }       from '../../app/shared/services/user-auth.service';
 import { HelperService }     from '../../app/shared/services/helper.service';
 import { AppUser }           from '../../app/shared/models/app-user.model';
 //import { Setting }           from '../../models/user.model';
@@ -17,7 +17,7 @@ import { AppUser }           from '../../app/shared/models/app-user.model';
 })
 export class HomePage implements OnInit {
 
-  appUser$: AppUser;
+  appUser: AppUser;
   newSettings;
 
   cartPage: string = 'ShoppingCartPage';
@@ -27,14 +27,14 @@ export class HomePage implements OnInit {
     public navCtrl: NavController, 
     public navParams: NavParams,
     public modalCtrl: ModalController,
-    private authService: AuthService,
+    private authService: UserAuthService,
     public helperService: HelperService) {
 
       
   }
 
   ngOnInit() {
-    this.authService.appUser$.subscribe((user) => this.appUser$ = user);
+    this.authService.appUser$.subscribe((user) => this.appUser = user);
   }
 
   ionViewDidLoad() {

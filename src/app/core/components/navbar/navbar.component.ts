@@ -6,13 +6,14 @@ import { NavController,
          LoadingController, 
          ToastController }   from 'ionic-angular';
 
-import { AuthService }       from '../../../shared/services/auth.service';
+import { UserAuthService }       from '../../../shared/services/user-auth.service';
 import { AppUser }           from '../../../shared/models/app-user.model';
 import { HelperService }     from '../../../shared/services/helper.service';
 import { ShoppingCartService } from '../../../shared/services/shopping-cart.service';
-import { UserService }       from '../../../shared/services/user.service';
 import { Item } from '../../../shared/models/item.model';
-import { Storage } from '@ionic/storage';
+import { Subscription } from 'rxjs/Subscription';
+//import { Storage } from '@ionic/storage';
+//import { Cart } from '../../../shared/models/cart.model';
 
 
 @Component({
@@ -21,41 +22,43 @@ import { Storage } from '@ionic/storage';
 })
 export class NavbarComponent implements OnInit{
 
-  appUser$: AppUser;
+  //authUser$: Subscription;
+  appUser: AppUser;
   headerSize: string ='48px';
   currentPage: string;
-  cart: Item[] = [];
+  //cart: Cart;
 
-  cartCount: number;
+  cartCount: number = 0;
   
   constructor(public navCtrl: NavController, 
               public actionCtrl: ActionSheetController,
               public alertCtrl: AlertController,
               public loadingCtrl: LoadingController,
               public toastCtrl: ToastController,
-              public authService: AuthService,
+              public authService: UserAuthService,
               public helperService: HelperService,
               public cartService: ShoppingCartService,
-              public userService: UserService,
-              public storage: Storage) { 
+              //public storage: Storage
+  ) { 
 
-    this.storage.get('cart').then((data: Item[]) => {
-      this.cart = (data.length || data != null) ? data.slice() : [];
+
+    
+
+    
+  }
+
+  async ngOnInit() {
+    this.authService.appUser$.subscribe((appUser: AppUser) => {
+      //this.appUser = appUser;
     });
-  }
+    this.helperService.curPage$.subscribe((page: string) => this.currentPage = page);
 
-  ngOnInit() {
-    this.authService.appUser$.subscribe((user) => this.appUser$ = user);
-    this.helperService.curPage.subscribe((page: string) => this.currentPage = page);
-  }
-
-  getCartCount() {
-    let counter: number = 0;
-    if (!this.cart) return;
-    for (let item of this.cart) {
-      counter += item.quantity;
-    }
-    this.cartCount = counter;
+    /*this.cartService.getCart()
+      .then((cart: Cart) => this.cart = cart)      
+      .catch((error) =>console.log(error));
+      
+    this.cartCount = this.cart.cartItemCount;
+    console.log(this.cartCount);*/
   }
 
   onLogout() {
@@ -87,7 +90,7 @@ export class NavbarComponent implements OnInit{
   }
 
   onShowAdminOptions() {
-    if (this.appUser$.isAdmin) {
+    if (this.appUser.isAdmin) {
 
       this.actionCtrl.create({
         title: 'Admin Controls',

@@ -2,16 +2,14 @@ import { Item } from './item.model';
 
  
 export class Cart {
-    
-    dateCreated: string;
-    constructor(public items?: Item[]) {
-        this.dateCreated = new Date().getTime().toString();
+
+    constructor(dateCreated: string, public items?: Item[]) {
         if (!this.items) this.items = [];
     }
 
-    get cartItemCount() {
+    get cartItemCount(): number {
         let counter = 0;
-        if (!this.items) {
+        if (this.items.length === 0) {
             return counter;
         } else {
             for (let item of this.items) {
@@ -21,7 +19,7 @@ export class Cart {
         }
     }
 
-    get cartTotalPrice() {
+    get cartTotalPrice(): number {
         let counter = 0;
         if (!this.items) {
             return counter;
@@ -29,6 +27,7 @@ export class Cart {
             for (let item of this.items) {
                 counter += item.itemPrice;
             }
+            return counter;
         }
     }
 }

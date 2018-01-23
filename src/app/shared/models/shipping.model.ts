@@ -1,4 +1,4 @@
-export interface BillingAddress {
+export interface Shipping {
 
     first_name: string;
     last_name: string;
@@ -8,6 +8,4 @@ export interface BillingAddress {
     state: string;
     postcode: string;
     country: string;
-    email: string;
-    phone: string;
 }

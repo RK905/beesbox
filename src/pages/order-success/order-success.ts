@@ -4,7 +4,7 @@ import { IonicPage,
          NavController, 
          NavParams }   from 'ionic-angular';
 
-import { AuthService } from '../../app/shared/services/auth.service';         
+import { UserAuthService } from '../../app/shared/services/user-auth.service';         
 import { AppUser }     from '../../app/shared/models/app-user.model';
 
 
@@ -15,17 +15,17 @@ import { AppUser }     from '../../app/shared/models/app-user.model';
 })
 export class OrderSuccessPage implements OnInit {
 
-  appUser$: AppUser;
+  appUser: AppUser;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
-              private authService: AuthService) {
+              private authService: UserAuthService) {
   }
 
   ngOnInit() {
     this.authService.appUser$.subscribe((user) => {
       if (!user) return;
-      this.appUser$ = user;
+      this.appUser = user;
     });
   }
 

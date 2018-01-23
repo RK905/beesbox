@@ -1,11 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, 
+         Input, 
+         OnInit } from '@angular/core';
 
 import { NavController }    from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
-import { ShoppingCartService } from '../../services/shopping-cart.service';
+import { HelperService } from '../../services/helper.service';
+//import { ShoppingCartService } from '../../services/shopping-cart.service';
 import { Product }          from '../../models/product.model';
-//import { ShoppingCart } from '../../models/shopping-cart.model';
 import { Cart } from '../../models/cart.model';
 import { Item } from '../../models/item.model';
 
@@ -14,32 +16,38 @@ import { Item } from '../../models/item.model';
     selector: 'product-grid',
     templateUrl: 'product-grid.html'
 })
-export class ProductGridComponent {
+export class ProductGridComponent implements OnInit {
 
     @Input() 
     product: Product;
 
-    cart: Item[];
+    gridSize: number;
+    cart: Cart;
+    isInCart: boolean;
 
     constructor(public navCtrl: NavController, 
-                private cartService: ShoppingCartService,
+                private helperService: HelperService,
+                //private cartService: ShoppingCartService,
                 public storage: Storage) {
-        this.storage.get('cart').then((data: Item[]) => {
-            this.cart = (data.length || data != null) ? data.slice() : [];
-        }); 
+
+        
     }
 
-    getQuantity() {
-        if (!this.cart) return 0;
-        else {
-            for (let i of this.cart) {
-                return (i.product.id === this.product.id) ? i.quantity : 0;
-            }
-        }
+    ngOnInit() {
+        //this.cartService.getCart().then((cart: Cart) => this.cart = cart);
+        this.helperService.gridSize$.subscribe((size: number) => this.gridSize = size);
     }
 
     showProductDetails() {
         this.navCtrl.push('ProductDetailsPage', { product: this.product });
     }
+
+    toggleAddToCartButton() {
+        for (let item of this.cart.items) {
+            this.isInCart = (item.product.id === this.product.id) ? true : false;
+        }
+    }
+
+
 
 }

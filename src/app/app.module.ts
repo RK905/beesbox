@@ -1,9 +1,17 @@
 import { BrowserModule }           from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ErrorHandler, NgModule }  from '@angular/core';
+import { ErrorHandler, 
+         NgModule, 
+         //isDevMode
+         }               from '@angular/core';
 import { HttpModule }              from '@angular/http';
 import { IonicStorageModule }      from '@ionic/storage';
 import { environment }             from '../environments/environment';
+
+
+//import { NgRedux, NgReduxModule, DevToolsExtension } from 'ng2-redux';
+//import { rootReducer, INITIAL_STATE, IAppState } from './store';
+//import { fromJS, Map } from 'immutable';
 
 import { IonicApp, 
          IonicErrorHandler, 
@@ -15,6 +23,7 @@ import { SharedModule }            from './shared/shared.module';
 
 import { SplashScreen }     from '@ionic-native/splash-screen';
 import { StatusBar }        from '@ionic-native/status-bar';
+import { NativeStorage } from '@ionic-native/native-storage';
 import { MyApp }            from './app.component';
 
 
@@ -26,6 +35,7 @@ import { MyApp }            from './app.component';
     BrowserModule,
     BrowserAnimationsModule,
     HttpModule,
+    //NgReduxModule,
     CoreModule,
     SharedModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
@@ -41,7 +51,16 @@ import { MyApp }            from './app.component';
   providers: [
     StatusBar,
     SplashScreen,
+    NativeStorage,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
-export class AppModule {}
+export class AppModule {
+  /*constructor(ngRedux: NgRedux<IAppState>,
+              devTools: DevToolsExtension) {
+
+    const enhancers: any[] = isDevMode() ? [devTools.enhancer()] : [];
+
+    ngRedux.configureStore(rootReducer, fromJS(INITIAL_STATE), [], enhancers);
+  }*/
+}

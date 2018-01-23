@@ -1,53 +1,60 @@
-import { Component, OnInit }   from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
-import { Platform }            from 'ionic-angular';
-import { Storage }             from '@ionic/storage';
-import { StatusBar }           from '@ionic-native/status-bar';
-import { SplashScreen }        from '@ionic-native/splash-screen';
+import { Platform, Nav }        from 'ionic-angular';
+import { StatusBar }            from '@ionic-native/status-bar';
+import { SplashScreen }         from '@ionic-native/splash-screen';
 
-import { AuthService }         from './shared/services/auth.service';
-import { UserService }         from './shared/services/user.service';
-import { ShoppingCartService } from './shared/services/shopping-cart.service';
-import { AppUser }             from './shared/models/app-user.model';
-import { Item } from './shared/models/item.model';
- 
-import { Observable }          from 'rxjs/Observable';
+import { UserAuthService }      from '../app/shared/services/user-auth.service';
+
+import * as firebase            from 'firebase';
+import { DataService }          from './shared/services/data.service';
+import { AppUser }              from './shared/models/app-user.model';
 
 
 @Component({
   templateUrl: 'app.html'
 })
-export class MyApp implements OnInit {
-  rootPage: string = 'MenuPage';
-  appUser$: AppUser;
-  cart: Item[] = [];
+export class MyApp {
 
-  constructor(platform: Platform, 
-              statusBar: StatusBar, 
-              splashScreen: SplashScreen,
-              private authService: AuthService,
-              private cartService: ShoppingCartService,
-              private userService: UserService,
-              public storage: Storage) {
+  @ViewChild(Nav)
+  nav: Nav;
 
-    platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
-      splashScreen.hide();
-    });
-    this.storage.get('cart').then((data: Item[]) => {
-      this.cart = (data == undefined || data == null) ? [] : data;
-    }); 
+  appUser: AppUser;
+  rootPage: string = 'LoginPage';
 
-    
+  constructor(private platform: Platform, 
+              private statusBar: StatusBar, 
+              private splashScreen: SplashScreen,
+              private authService: UserAuthService,
+              private dataService: DataService
+            ) {
+
+    this.initializeApp();
   }
 
-  async ngOnInit() {
-    this.authService.user$.subscribe((user) => {
-      if (!user) return;
-      this.authService.appUser$.subscribe((appUser) => this.appUser$ = appUser);
-      this.userService.saveUser(user);
+  initializeApp() {
+    this.platform.ready().then(() => {
+      // Okay, so the platform is ready and our plugins are available.
+      // Here you can do any higher level native things you might need.
+      this.statusBar.styleDefault();
+      this.splashScreen.hide();
+    });
+    this.dataService.checkStorage('user')
+      .then((appUser: AppUser) => {
+        if (appUser.email) {
+          this.appUser = appUser;
+          this.nav.setRoot('MenuPage');
+        }
+        else this.nav.setRoot('LoginPage');
+        
+      })
+      .catch((error) => {
+        console.log(error);
+        this.authService.getAuthenticatedUser().subscribe((user: firebase.User) => {
+          if (!user) this.nav.setRoot('LoginPage');
+      });
+
+    
     });
   }
 }

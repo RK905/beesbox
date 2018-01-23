@@ -1,0 +1,22 @@
+<ion-item>
+    <h2>{{ item.product.name }}</h2>
+    <p>{{ item.price | currency:'USD':'symbol' }}</p>
+    <ion-note item-left>{{ item.quantity }}</ion-note>
+    
+    <button 
+        ion-button 
+        item-right 
+        icon-only 
+        clear
+        (click)="incrementItem()">
+        <ion-icon name="add"></ion-icon>
+    </button>
+    <button 
+        ion-button
+        item-right 
+        icon-only
+        clear
+        (click)="decrementItem()">
+        <ion-icon color="danger" [name]="item.quantity === 1 ? 'close' : 'remove'"></ion-icon>
+    </button>
+    </ion-item>

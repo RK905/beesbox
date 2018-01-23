@@ -9,13 +9,14 @@ import { IonicPage,
          ToastController }     from 'ionic-angular';
 import { Storage }             from '@ionic/storage';
 
-import { AuthService }         from '../../app/shared/services/auth.service';
-import { ShoppingCartService } from '../../app/shared/services/shopping-cart.service';
+import { UserAuthService }         from '../../app/shared/services/user-auth.service';
+//import { ShoppingCartService } from '../../app/shared/services/shopping-cart.service';
 import { AppUser }             from '../../app/shared/models/app-user.model';
 import { Item }                from '../../app/shared/models/item.model';
 
 import { Observable }          from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import { Cart } from '../../app/shared/models/cart.model';
 
 
 @IonicPage()
@@ -25,8 +26,8 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class ShoppingCartPage implements OnInit, OnDestroy {
 
-  appUser$: AppUser;
-  cart: Item[] = [];
+  appUser: AppUser;
+  cart: Cart;
   subscription: Subscription;
 
   constructor(
@@ -34,31 +35,32 @@ export class ShoppingCartPage implements OnInit, OnDestroy {
       private navParams: NavParams,
       private alertCtrl: AlertController,
       private toastCtrl: ToastController,
-      private authService: AuthService,
-      private cartService: ShoppingCartService,
+      private authService: UserAuthService,
+      //private cartService: ShoppingCartService,
       public storage: Storage) {    
         
-    this.storage.get('cart').then((data: Item[]) => {
-      this.cart = (data.length || data != null) ? data.slice() : [];
-    });    
+        
   }
 
   async ngOnInit() {
     this.authService.appUser$.subscribe((user) => {
       if (!user) return;
-      this.appUser$ = user;
+      this.appUser = user;
     });
+
+    /*this.cartService.getCart()
+      .then((cart: Cart) => this.cart = cart)
+      .catch(() => console.log('could not bind to cart'));*/
     
   }
 
   ionViewDidEnter() {
-    this.storage.get('cart').then((data: Item[]) => {
-      this.cart = data;
-    });
-    console.log('cart loaded + ', ...this.cart);
+    /*this.cartService.getCart()
+      .then((cart: Cart) => this.cart = cart)
+      .catch(() => console.log('could not bind to cart'));*/
   }
 
-  removeFromCart(index: number) {
+  removeFromCart() {
     this.alertCtrl.create({
       title: 'Remove Cart Item',
       message: 'Are you sure you want to remove all of these?',
@@ -71,9 +73,6 @@ export class ShoppingCartPage implements OnInit, OnDestroy {
       }, {
         text: 'Remove Item',
         handler: () => {
-          this.cart.splice(index, 1);
-          this.storage.set('cart', this.cart).then(() => console.log('item removed'))
-            .then((error) => console.log(error));
         }
       }]
     }).present();
@@ -92,8 +91,11 @@ export class ShoppingCartPage implements OnInit, OnDestroy {
       }, {
         text: 'Empty Cart',
         handler: () => {
-          this.cart = [];
-          this.storage.set('cart', this.cart).then(() => this.emptyCartToast());
+          console.log('emptied');
+          //this.cartService.emptyCart();
+          //this.cartService.getCart()
+            //.then((cart: Cart) => this.cart = cart)
+            //.catch(() => console.log('error'));
         }
       }]
     }).present();
@@ -101,6 +103,11 @@ export class ShoppingCartPage implements OnInit, OnDestroy {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ShoppingCartPage');
+  }
+
+  onShowCheckout() {
+    if (this.appUser == null || this.appUser == undefined) this.navCtrl.setRoot('LoginPage', { returnPage: 'OrderSummaryPage' });
+    else this.navCtrl.push('OrderSummaryPage');
   }
 
   private emptyCartToast(type?: number) {

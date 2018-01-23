@@ -4,7 +4,7 @@ import { IonicPage,
          NavController, 
          NavParams }         from 'ionic-angular';
 
-import { AuthService }       from '../../app/shared/services/auth.service';
+import { UserAuthService }       from '../../app/shared/services/user-auth.service';
 import { HelperService }     from '../../app/shared/services/helper.service';
 import { AppUser }           from '../../app/shared/models/app-user.model';
 
@@ -16,7 +16,7 @@ import { AppUser }           from '../../app/shared/models/app-user.model';
 })
 export class FeaturedPage implements OnInit {
 
-  appUser$: AppUser;
+  appUser: AppUser;
 
   sampleFeatures: any[] = [
     {
@@ -36,11 +36,11 @@ export class FeaturedPage implements OnInit {
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams, 
-              public authService: AuthService,
+              public authService: UserAuthService,
               public helperService: HelperService) {}
 
   ngOnInit() {
-    this.authService.appUser$.subscribe((user) => this.appUser$ = user);
+    this.authService.appUser$.subscribe((user) => this.appUser = user);
   }
 
   ionViewDidLoad() {

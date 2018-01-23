@@ -63,8 +63,7 @@ export interface Product {
     variations:            number[],
     grouped_products:      number[],
     menu_order:            number,
-    meta_data:             Metadata[],
-    _links:                Link
+    meta_data:             Metadata[]
 }
 
 interface Dimension {
@@ -79,7 +78,7 @@ interface Category {
     slug: string;
 }
 
-interface Image {
+export interface Image {
     id:                number;
     date_created:      string;
     date_created_gmt:  string;
@@ -89,12 +88,6 @@ interface Image {
     name:              string;
     alt:               string;
     position:          number;
-}
-
-
-interface Link {
-    self:        Array<{ href: string }>;
-    collections: Array<{ href: string }>;
 }
 
 interface Download {
@@ -124,7 +117,7 @@ interface DefaultAttribute {
     option: string;
 }
 
-interface Metadata {
+export interface Metadata {
     id:    number;
     key:   string;
     value: string;

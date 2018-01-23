@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CoreModule } from '../../app/core/core.module';
+import { SharedModule } from '../../app/shared/shared.module';
 import { MenuPage } from './menu';
 
 @NgModule({
@@ -9,6 +10,7 @@ import { MenuPage } from './menu';
   ],
   imports: [
     CoreModule,
+    SharedModule,
     IonicPageModule.forChild(MenuPage),
   ],
   exports: [
